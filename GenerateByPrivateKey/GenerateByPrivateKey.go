@@ -14,13 +14,16 @@ type PrivateKey ed25519.PrivateKey
 type PublicKey ed25519.PublicKey
 
 func main() {
-	fmt.Println("输入私钥(input you private key):")
+	fmt.Println("输入私钥(input your private key):")
 	cmdReader := bufio.NewReader(os.Stdin)
-	privateKeyString, _ := cmdReader.ReadString('\n')
+	privateKeyString, err := cmdReader.ReadString('\n')
+	if err!=nil{
+		log.Println("读取输入状态错误")
+		os.Exit(0)
+	}
 	privateKeyString = strings.Trim(privateKeyString, "\r\n")
 	prvToBinary, err := hex.DecodeString(privateKeyString)
 	if err != nil {
-		fmt.Println("输入的私钥有错误")
 		log.Println("输入的私钥有错误,错误:", err, "  私钥: ", privateKeyString)
 		os.Exit(0)
 	} else {
