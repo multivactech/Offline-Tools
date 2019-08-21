@@ -22,7 +22,7 @@ func main() {
 	}
 	privateKeyString = strings.Trim(privateKeyString, "\r\n")
 	prvToBinary, err := hex.DecodeString(privateKeyString)
-	if (err != nil)||(len(privateKeyString)!=128) {
+	if (err != nil) || (len(privateKeyString) != 128) {
 		fmt.Println("输入的私钥有错误")
 		os.Exit(0)
 	} else {
