@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"golang.org/x/crypto/ed25519"
-	"log"
 	"os"
 	"strings"
 )
@@ -15,26 +14,32 @@ type PrivateKey ed25519.PrivateKey
 func main() {
 	fmt.Println("输入私钥(input you private key):")
 	privateKeyReader := bufio.NewReader(os.Stdin)
-	privateKey, _ := privateKeyReader.ReadString('\n')
+	privateKey, err := privateKeyReader.ReadString('\n')
+	if err != nil {
+		fmt.Println("读取私钥错误", err)
+		os.Exit(0)
+	}
 	privateKey = strings.Trim(privateKey, "\r\n")
 	if check(privateKey) {
 		prvToBinary, _ := hex.DecodeString(privateKey)
 		fmt.Println("输入需要签名的数据(input data need to be signed):")
 		txReader := bufio.NewReader(os.Stdin)
-		txString, _ := txReader.ReadString('\n')
+		txString, err := txReader.ReadString('\n')
+		if err != nil {
+			fmt.Println("读取交易错误：", err)
+			os.Exit(0)
+		}
 		txString = strings.Trim(txString, "\r\n")
 		tx, err := hex.DecodeString(txString)
 		if err != nil {
-			log.Println("err", err)
 			fmt.Println("需要签名的数据不合法(The transaction that needs to be signed is illegal)")
 			os.Exit(0)
 		} else {
 			signature := Sign(prvToBinary, tx)
-			fmt.Println("数据的签名(signature of data):", hex.EncodeToString(signature))
+			fmt.Println("签名的消息(signature of data):", hex.EncodeToString(signature))
 		}
 	} else {
 		fmt.Println("私钥不合法(Private key is illegal)")
-		log.Println("私钥不合法(Private key is illegal),privateKey:", privateKey)
 		os.Exit(0)
 	}
 }
@@ -53,4 +58,5 @@ func check(prvKey string) bool {
 		return false
 	}
 	return true
+
 }

@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"golang.org/x/crypto/ed25519"
-	"log"
 	"os"
 	"strings"
 )
@@ -17,14 +16,14 @@ func main() {
 	fmt.Println("输入私钥(input your private key):")
 	cmdReader := bufio.NewReader(os.Stdin)
 	privateKeyString, err := cmdReader.ReadString('\n')
-	if err!=nil{
-		log.Println("读取输入状态错误")
+	if err != nil {
+		fmt.Println("读取私钥错误")
 		os.Exit(0)
 	}
 	privateKeyString = strings.Trim(privateKeyString, "\r\n")
 	prvToBinary, err := hex.DecodeString(privateKeyString)
-	if err != nil {
-		log.Println("输入的私钥有错误,错误:", err, "  私钥: ", privateKeyString)
+	if (err != nil)||(len(privateKeyString)!=128) {
+		fmt.Println("输入的私钥有错误")
 		os.Exit(0)
 	} else {
 		prvKey := PrivateKey(prvToBinary)
