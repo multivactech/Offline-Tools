@@ -1,4 +1,4 @@
-# GenerateByPrivateKey
+# PrivateKeyToPublicKey
 
 ### 使用说明：
 
@@ -8,10 +8,10 @@
 
 ### 代码生成二进制文件：
 
-在终端中将目录跳转至：MultiVACTools/GenerateByPrivateKey目录
+在终端中将目录跳转至：MultiVACTools/PrivateKeyToPublicKey目录
 
 然后在终端中输入以下代码：
 ```
-go build GenerateByPrivateKey.go 
+go build PrivateKeyToPublicKey.go 
 ```
 输入代码编译通过即可在目录下得到一个可以直接运行的二进制代码，然后双击该文件即可运行
