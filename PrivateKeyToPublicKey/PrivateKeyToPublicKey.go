@@ -27,14 +27,14 @@ func main() {
 		os.Exit(0)
 	} else {
 		prvKey := PrivateKey(prvToBinary)
-		pubKey := prvKey.Public()
+		pubKey := prvKey.public()
 		fmt.Println("生成的公钥(your public key):", hex.EncodeToString(pubKey))
 	}
 
 }
 
 // Using the input private key to generate the public key.
-func (priv PrivateKey) Public() PublicKey {
+func (priv PrivateKey) public() PublicKey {
 	privateKey := ed25519.PrivateKey(priv)
 	publicKey := privateKey.Public()
 	return PublicKey(publicKey.(ed25519.PublicKey))

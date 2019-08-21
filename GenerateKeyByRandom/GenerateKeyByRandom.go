@@ -6,6 +6,7 @@ import (
 	"golang.org/x/crypto/ed25519"
 	"os"
 )
+
 func main() {
 	pubKey, prvKey, err := ed25519.GenerateKey(nil)
 	if err != nil {

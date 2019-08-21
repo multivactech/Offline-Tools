@@ -35,7 +35,7 @@ func main() {
 			fmt.Println("需要签名的数据不合法(The transaction that needs to be signed is illegal)")
 			os.Exit(0)
 		} else {
-			signature := Sign(prvToBinary, tx)
+			signature := sign(prvToBinary, tx)
 			fmt.Println("签名的消息(signature of data):", hex.EncodeToString(signature))
 		}
 	} else {
@@ -45,7 +45,7 @@ func main() {
 }
 
 // Sign the data with a private key.
-func Sign(privateKey PrivateKey, message []byte) []byte {
+func sign(privateKey PrivateKey, message []byte) []byte {
 	return ed25519.Sign(ed25519.PrivateKey(privateKey), message)
 }
 
