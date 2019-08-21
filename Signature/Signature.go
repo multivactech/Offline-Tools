@@ -26,7 +26,7 @@ func main() {
 		txReader := bufio.NewReader(os.Stdin)
 		txString, err := txReader.ReadString('\n')
 		if err != nil {
-			fmt.Println("读取交易错误：", err)
+			fmt.Println("读取数据错误：", err)
 			os.Exit(0)
 		}
 		txString = strings.Trim(txString, "\r\n")
