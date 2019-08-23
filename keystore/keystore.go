@@ -8,9 +8,10 @@ import (
 	"golang.org/x/crypto/scrypt"
 	"io/ioutil"
 	"os"
-	time2 "time"
+	"time"
 )
 
+// KdfParam用于存储PBKDF2算法生成证书(密钥)用到的参数，必须满足：1.n为2的幂 2.p*r<2^30
 type KdfParam struct {
 	N      int    `json:"n"`
 	R      int    `json:"r"`
@@ -18,9 +19,14 @@ type KdfParam struct {
 	KeyLen int    `json:"keyLen"`
 	Salt   []byte `json:"salt"`
 }
+
+// CipherParams用于存储aes-128-ctr加密算法所需要用的必要参数
 type CipherParams struct {
+	//aes-128-ctr用到的初始化向量
 	Iv []byte
 }
+
+// KeystoreJson用于进行json编码存储与本地
 type KeyStoreJson struct {
 	Kdfparam     KdfParam     `json:"kdfparam"`
 	CipherParams CipherParams `json:"cipher_params"`
@@ -62,7 +68,7 @@ func generateCertificate(password []byte) ([]byte, KdfParam, error) {
 func MakeKeyStore(password, privateKey []byte) (string, error) {
 	certificate, kdfparams, err := generateCertificate(password)
 	if err != nil {
-		return "", fmt.Errorf("%v", err)
+		return "", err
 	}
 	cipherText, iv, err := aesCtrCrypt(privateKey, certificate)
 	if err != nil {
@@ -83,8 +89,8 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("转化为json文件失败：%v", err)
 	}
-	time := time2.Now().String()
-	fileName := fmt.Sprintf("MultiVAC%v.json", time)
+	CurrentTime := time.Now().String()
+	fileName := fmt.Sprintf("MultiVAC%v.json", CurrentTime)
 	file, err := os.Create(fileName)
 	defer file.Close()
 	if err != nil {
@@ -102,7 +108,7 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 func aesCtrCrypt(text []byte, key []byte) ([]byte, []byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, nil, fmt.Errorf("%v", err)
+		return nil, nil, err
 	}
 	// 指定初始向量,长度必须等于block的块尺寸
 	iv := []byte("12345678MultiVAC")
