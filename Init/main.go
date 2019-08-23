@@ -1,6 +1,7 @@
 package main
 
 import (
+	"MultiVACTools/keystore"
 	"fmt"
 	"os"
 
@@ -11,7 +12,7 @@ func main() {
 
 	// Todo:带重构完其他模块一起整合
 	// 简单的测试用例，等重构完其他部分再一起修改
-	account := mnemonic.GenerateMnemonicByLength(24)
+	account, _ := mnemonic.GenerateMnemonicByLength(24)
 	fmt.Println("助记词:", account.Mnemonic)
 	fmt.Println("私钥", account.PrivateKey)
 	fmt.Println("公钥", account.PublicKey)
@@ -32,5 +33,13 @@ func main() {
 		fmt.Println("私钥", prv)
 		fmt.Println("公钥", pub)
 	}
+	privatekey := prv
+	pass := []byte("linglinger")
+	filename, _ := keystore.MakeKeyStore(pass, []byte(privatekey))
+	fmt.Println("为加密的私钥：", privatekey)
+	fmt.Println("生成的文件为：", filename)
+	ciphertext, params, _ := keystore.ReadJson(filename)
+	prv2, _ := keystore.GetPrivatekeyFromKeystore(string(pass), params, ciphertext)
+	fmt.Println("解密后私钥：", prv2)
 
 }
