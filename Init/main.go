@@ -2,10 +2,9 @@ package main
 
 import (
 	"MultiVACTools/keystore"
+	"MultiVACTools/mnemonic"
 	"fmt"
 	"os"
-
-	"MultiVACTools/mnemonic"
 )
 
 func main() {
@@ -36,10 +35,18 @@ func main() {
 	privatekey := prv
 	pass := []byte("linglinger")
 	filename, _ := keystore.MakeKeyStore(pass, []byte(privatekey))
-	fmt.Println("为加密的私钥：", privatekey)
+	fmt.Println("未加密的私钥：", privatekey)
 	fmt.Println("生成的文件为：", filename)
-	ciphertext, params, _ := keystore.ReadJson(filename)
-	prv2, _ := keystore.GetPrivatekeyFromKeystore(string(pass), params, ciphertext)
+	ciphertext, params, mac, err := keystore.ReadJson(filename)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+	prv2, err := keystore.GetPrivatekeyFromKeystore(string(pass), params, ciphertext, mac)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
 	fmt.Println("解密后私钥：", prv2)
 
 }

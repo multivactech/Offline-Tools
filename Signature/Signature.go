@@ -58,5 +58,4 @@ func check(prvKey string) bool {
 		return false
 	}
 	return true
-
 }
