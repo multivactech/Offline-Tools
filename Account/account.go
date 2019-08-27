@@ -20,12 +20,9 @@ func GenerateAccount() (PublicKey, PrivateKey, error) {
 
 // PrivatekeyToPublickey get the public key for the input private key.
 func PrivatekeyToPublickey(prv string) ([]byte, error) {
-	if !isLegal(prv) {
-		return nil, fmt.Errorf("私钥不合法")
-	}
-	prvToBinary, err := hex.DecodeString(prv)
+	prvToBinary, err := isLegal(prv)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("私钥不合法,%v", err)
 	}
 	prvKey := PrivateKey(prvToBinary)
 	pubKey := prvKey.public()
@@ -33,14 +30,15 @@ func PrivatekeyToPublickey(prv string) ([]byte, error) {
 }
 
 // isLegal check whether the private key is legal for MultiVAC Project.
-func isLegal(privateKey string) bool {
+func isLegal(privateKey string) ([]byte, error) {
 	if len(privateKey) != 128 {
-		return false
+		return nil, fmt.Errorf("长度错误")
 	}
-	if _, err := hex.DecodeString(privateKey); err != nil {
-		return false
+	if val, err := hex.DecodeString(privateKey); err != nil {
+		return nil, err
+	} else {
+		return val, nil
 	}
-	return true
 }
 
 // public using private key to get its public key.
