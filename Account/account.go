@@ -10,12 +10,12 @@ type PrivateKey ed25519.PrivateKey
 type PublicKey ed25519.PublicKey
 
 // GenerateAccount generate public key and private key for MultiVAC project.
-func GenerateAccount() ([]byte, []byte, error) {
+func GenerateAccount() (PublicKey, PrivateKey, error) {
 	pubKey, prvKey, err := ed25519.GenerateKey(nil)
 	if err != nil {
 		return nil, nil, err
 	}
-	return pubKey, prvKey, nil
+	return PublicKey(pubKey), PrivateKey(prvKey), nil
 }
 
 // PrivatekeyToPublickey get the public key for the input private key.
