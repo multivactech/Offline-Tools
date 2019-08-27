@@ -155,21 +155,23 @@ func GetPrivatekeyFromKeystore(password string, params *KdfParam, cipherText []b
 	if err != nil {
 		return "", fmt.Errorf("解密失败，%v", err)
 	}
-	if isLegal(privateKey) == false {
+	_, err = isLegal(string(privateKey))
+	if err != nil {
 		return "", fmt.Errorf("解密失败，json被篡改")
 	}
 	return string(privateKey), nil
 }
 
 // isLegal check if the private key is legal.
-func isLegal(privateKey []byte) bool {
+func isLegal(privateKey string) ([]byte, error) {
 	if len(privateKey) != 128 {
-		return false
+		return nil, fmt.Errorf("长度错误")
 	}
-	if _, err := hex.DecodeString(string(privateKey)); err != nil {
-		return false
+	if val, err := hex.DecodeString(privateKey); err != nil {
+		return nil, err
+	} else {
+		return val, nil
 	}
-	return true
 }
 
 // GetAllJsonFiles read all json files in local folder.

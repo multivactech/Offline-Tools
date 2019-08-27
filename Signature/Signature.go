@@ -8,62 +8,29 @@ import (
 
 type PrivateKey ed25519.PrivateKey
 
-//func main() {
-//	fmt.Println("输入私钥(input you private key):")
-//	privateKeyReader := bufio.NewReader(os.Stdin)
-//	privateKey, err := privateKeyReader.ReadString('\n')
-//	if err != nil {
-//		fmt.Println("读取私钥错误", err)
-//		os.Exit(0)
-//	}
-//	privateKey = strings.Trim(privateKey, "\r\n")
-//	if check(privateKey) {
-//		prvToBinary, _ := hex.DecodeString(privateKey)
-//		fmt.Println("输入需要签名的数据(input data need to be signed):")
-//		txReader := bufio.NewReader(os.Stdin)
-//		txString, err := txReader.ReadString('\n')
-//		if err != nil {
-//			fmt.Println("读取数据错误：", err)
-//			os.Exit(0)
-//		}
-//		txString = strings.Trim(txString, "\r\n")
-//		tx, err := hex.DecodeString(txString)
-//		if err != nil {
-//			fmt.Println("需要签名的数据不合法(The transaction that needs to be signed is illegal)")
-//			os.Exit(0)
-//		} else {
-//			signature := sign(prvToBinary, tx)
-//			fmt.Println("签名的消息(signature of data):", hex.EncodeToString(signature))
-//		}
-//	} else {
-//		fmt.Println("私钥不合法(Private key is illegal)")
-//		os.Exit(0)
-//	}
-//}
-
-// Todo：test them
 // Sign the data with a private key.
 func Sign(privateKey string, message string) ([]byte, error) {
-	if !isLegal(privateKey) {
+	binaryPrv, err := IsLegal(privateKey)
+	if err != nil {
 		return nil, fmt.Errorf("私钥不合法")
 	}
-	_, err := hex.DecodeString(string(message))
+	binaryMsg, err := hex.DecodeString(string(message))
 	if err != nil {
-		return nil, fmt.Errorf("签名的数据不合法")
+		return nil, fmt.Errorf("签名的数据不合法,%v", err)
 	}
-	// 已经在上面进行来检测，所以这里不需要处理错误
-	prv2Binary, _ := hex.DecodeString(privateKey)
-	msg2Binary, _ := hex.DecodeString(message)
-	return ed25519.Sign(ed25519.PrivateKey(prv2Binary), msg2Binary), nil
+	// 已经在上面进行来检测，所以这里不需要处理错误.
+	return ed25519.Sign(ed25519.PrivateKey(binaryPrv), binaryMsg), nil
 }
 
 // isLegal checks if the private key is legal.
-func isLegal(privateKey string) bool {
+func IsLegal(privateKey string) ([]byte, error) {
 	if len(privateKey) != 128 {
-		return false
+		return nil, fmt.Errorf("私钥长度错误，长度应该为128")
 	}
-	if _, err := hex.DecodeString(privateKey); err != nil {
-		return false
+	if val, err := hex.DecodeString(privateKey); err != nil {
+		return nil, err
+	} else {
+		return val, nil
 	}
-	return true
+
 }

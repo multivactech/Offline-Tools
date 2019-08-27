@@ -23,8 +23,7 @@ func PrivatekeyToPublickey(prv string) ([]byte, error) {
 	if !isLegal(prv) {
 		return nil, fmt.Errorf("私钥不合法")
 	}
-	privateKeyString := prv
-	prvToBinary, err := hex.DecodeString(privateKeyString)
+	prvToBinary, err := hex.DecodeString(prv)
 	if err != nil {
 		return nil, err
 	}

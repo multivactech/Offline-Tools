@@ -45,18 +45,8 @@ func GenerateMnemonicByLength(length int) (*Account, error) {
 	seedForMultiVAC := seed[:32]
 	reader := bytes.NewReader(seedForMultiVAC)
 	pub, prv, err := ed25519.GenerateKey(reader)
-	////test
-	//fmt.Println(prv)
-	//fmt.Println(pub)
-	//fmt.Println(len(prv))
-	//fmt.Println(len(pub))
 	hexPrv := hex.EncodeToString(prv)
-	//fmt.Println(hexPrv)
-	//fmt.Println(len(hexPrv))
 	hexPub := hex.EncodeToString(pub)
-	//fmt.Println(hexPub)
-	//fmt.Println(len(hexPub))
-	////test
 	if err != nil {
 		return nil, fmt.Errorf("密钥生成失败，err:%v", err)
 	}
