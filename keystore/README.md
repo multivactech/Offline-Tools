@@ -1,22 +1,62 @@
-# keystore
+# MultiVAC离线使用工具
 
-### 简介：
+## 说明：
 
-keystore用于使用密码对私钥进行加密存储，解密获取私钥时需要提供密码
+本项目适用于MultiVAC的离线工具，基于Go1.12版本，在离线下具有以下功能：
 
-### 加密
+1. 随机生成适用于MultiVAC的私钥和对应的公钥(GenerateKeyByRandom)
+2. 根据用户给的私钥生成对应的公钥(PrivateKeyToPublicKey)
+3. 使用私钥对输入的交易进行签名(Signature)
+4. 根据助记词生成私钥及其公钥
+5. 将私钥保存到keystore
+6. 根据（keystore+密码）或助记词找回私钥
 
-```go
-filename, _ := keystore.MakeKeyStore(pass, []byte(privatekey))
+## 使用方法：
+
+根据源码编译好的二进制文件位于/MultiVACTools/application文件夹内，用户可以根据自己的操作系统选择符合自己系统运行的二进制文件。其中GenerateKeyByRandom、PrivateKeyToPublicKey、Signature这三个文件为旧版本的离线工具，没有助记词和keystore功能，MultiVACTools为新版本，新版和旧版在私钥、公钥和签名功能上完全兼容，两个版本完全互通，新版本的助记词功能和keystore功能在旧版上上无法使用，程序为命令行工具，打开工具根据提示输入编号即可，在输入编号时程序只会关注第一个输入的字符，所以在输入选择功能菜单的时候请确定您的输入是否正确,在输入助记词的时候每个单词之间请用一个空格字符分隔以方便区分输入结束以后按enter键结束输入；在输入私钥和需要签名的交易时根据提示输入，输入结束按enter键结束即可。 
+
+## 源码编译：
+
+源码的主程序位于项目的Main目录下，项目需要的依赖已经放在了vendor目录下面，可以自行打开源码，在Go1.12以上版本进行编译。编译的时候跳转到Main目录下，在命令行（终端）输入：
+
+```bash
+go build main.go
 ```
 
-程序会在项目文件夹下生成一个json文件，文件名为filename
+## 注意事项：
 
-### 解密
+1. 助记词和私钥具有等同地位，助记词泄漏意味着私钥泄漏，所以务必保存好助记词，不要让他人知晓
 
-```go
-ciphertext, params, _ := keystore.ReadJson(filename)
-prv2, _ := keystore.GetPrivatekeyFromKeystore(string(pass), params, ciphertext)
-```
+2. keystore的密码请务必记清楚，keystore生成的json文件位于当前二进制程序的目录下，读取的时候程序会自动读取当前二进制程序目录下的json文件
 
-程序从本地进行json文件读取，然后根据用户的密码即可解密获得到用户的私钥
+   ## 程序的菜单结构：
+
+   |———1.生成新账户
+
+   |                      |——1.使用助记词生成私钥及公钥
+
+   |                      | 
+
+   |                      |——2.直接生成私钥及公钥
+
+   |
+
+   |———2.找回私钥
+
+   |                      |——1.使用助记词找回
+
+   |                      | 
+
+   |                      |——2.直接keystore+密码找回
+
+   |
+
+   |———3.找回公钥
+
+   |
+
+   |
+
+   |
+
+   |———4.签名交易
