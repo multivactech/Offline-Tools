@@ -167,11 +167,12 @@ func isLegal(privateKey string) ([]byte, error) {
 	if len(privateKey) != 128 {
 		return nil, fmt.Errorf("长度错误")
 	}
-	if val, err := hex.DecodeString(privateKey); err != nil {
+	val, err := hex.DecodeString(privateKey)
+	if err != nil {
 		return nil, err
-	} else {
-		return val, nil
 	}
+	return val, nil
+
 }
 
 // GetAllJsonFiles read all json files in local folder.

@@ -35,7 +35,7 @@ func main() {
 		case 1:
 			// Use mnemonic to generate account.
 			func() {
-				account, err := mnemonic.GenerateMnemonicByLength(24)
+				account, err := mnemonic.GenerateMnemonicByLength(12)
 				if err != nil {
 					fmt.Println(err)
 					os.Exit(0)

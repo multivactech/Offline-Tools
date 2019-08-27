@@ -27,7 +27,8 @@ func IsLegal(privateKey string) ([]byte, error) {
 	if len(privateKey) != 128 {
 		return nil, fmt.Errorf("私钥长度错误，长度应该为128")
 	}
-	if val, err := hex.DecodeString(privateKey); err != nil {
+	val, err := hex.DecodeString(privateKey)
+	if err != nil {
 		return nil, err
 	} else {
 		return val, nil

@@ -22,7 +22,7 @@ func GenerateAccount() (PublicKey, PrivateKey, error) {
 func PrivatekeyToPublickey(prv string) ([]byte, error) {
 	prvToBinary, err := isLegal(prv)
 	if err != nil {
-		return nil, fmt.Errorf("私钥不合法,%v", err)
+		return nil, fmt.Errorf("私钥不合法,err:%v", err)
 	}
 	prvKey := PrivateKey(prvToBinary)
 	pubKey := prvKey.public()
@@ -34,11 +34,12 @@ func isLegal(privateKey string) ([]byte, error) {
 	if len(privateKey) != 128 {
 		return nil, fmt.Errorf("长度错误")
 	}
-	if val, err := hex.DecodeString(privateKey); err != nil {
+	val, err := hex.DecodeString(privateKey)
+	if err != nil {
 		return nil, err
-	} else {
-		return val, nil
 	}
+	return val, nil
+
 }
 
 // public using private key to get its public key.
