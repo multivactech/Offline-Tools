@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -68,7 +69,7 @@ func main() {
 					fmt.Println(err)
 					os.Exit(0)
 				}
-				fmt.Println("keystore已经生成到当前目录，文件名:", fileName)
+				fmt.Println("keystore已经生成到:", fileName)
 			}()
 		case 2:
 			// Generate account only.
@@ -107,7 +108,7 @@ func main() {
 					fmt.Println(err)
 					os.Exit(0)
 				}
-				fmt.Println("keystore已经生成到当前目录，文件名:", fileName)
+				fmt.Println("keystore已经生成到:", fileName)
 			}()
 		default:
 			os.Exit(0)
@@ -165,16 +166,27 @@ func main() {
 					fmt.Println(err)
 					os.Exit(0)
 				}
-				fmt.Println("keystore已经生成到当前目录，文件名:", fileName)
+				fmt.Println("keystore已经生成到:", fileName)
 			}()
 		case 2:
 			// Use password to get private key in keystore.
 			func() {
 				var fileSlice []string
-				dir, err := os.Getwd()
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(0)
+				var dir string
+				if runtime.GOOS == "windows" {
+					dir = "C:\\MultiVACkeystore"
+					_, err := os.Stat(dir)
+					if err != nil {
+						fmt.Println("keystore存储文件夹不存在")
+						os.Exit(0)
+					}
+				} else {
+					dir = "~/MultiVACkeystore"
+					_, err := os.Stat(dir)
+					if err != nil {
+						fmt.Println("keystore存储文件夹不存在")
+						os.Exit(0)
+					}
 				}
 				fileSlice, err = keystore.GetAllJsonFiles(dir, fileSlice)
 				if err != nil {
@@ -182,7 +194,7 @@ func main() {
 					os.Exit(0)
 				}
 				if len(fileSlice) == 0 {
-					fmt.Println("在程序当前目录下没有发现keystore文件")
+					fmt.Println("在程序指定目录下没有发现keystore文件")
 					os.Exit(0)
 				}
 				fmt.Printf("编号\t  文件名\n")
@@ -275,7 +287,7 @@ func main() {
 				fmt.Println(err)
 				os.Exit(0)
 			}
-			fmt.Println("keystore已经生成到当前目录，文件名:", fileName)
+			fmt.Println("keystore已经生成到:", fileName)
 		}()
 	case 4:
 		// Sign the transaction by using private key.

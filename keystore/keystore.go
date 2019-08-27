@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 
-	"github.com/ethereum/go-ethereum/crypto"
+	crypto2 "github.com/ethereum/go-ethereum/crypto"
 	"golang.org/x/crypto/scrypt"
 )
 
@@ -73,7 +74,7 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("加密失败，%v", err)
 	}
-	mac := crypto.Keccak256(certificate, cipherText)
+	mac := crypto2.Keccak256(certificate, cipherText)
 	keyStoreFile := KeyStoreJson{
 		Kdfparam: kdfparams,
 		CipherParams: CipherParams{
@@ -90,18 +91,39 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("转化为json文件失败：%v", err)
 	}
-	CurrentTime := time.Now().Format("2006-1-2 15:04:05")
-	fileName := fmt.Sprintf("./MultiVAC%v.json", CurrentTime)
+	var fileName string
+	CurrentTime := time.Now().Format("2006-1-2-15-04-05")
+	if runtime.GOOS == "windows" {
+		filePath := "C:\\MultiVACkeystore\\"
+		_, err := os.Stat(filePath)
+		if err != nil {
+			err := os.Mkdir(filePath, os.ModePerm)
+			if err != nil {
+				return "", fmt.Errorf("创建文件keystore文件夹失败")
+			}
+		}
+		fileName = filePath + "MultiVAC" + CurrentTime + ".json"
+	} else {
+		filePath := "~/MultiVACkeystore"
+		_, err := os.Stat(filePath)
+		if err != nil {
+			err := os.Mkdir(filePath, os.ModePerm)
+			if err != nil {
+				return "", fmt.Errorf("创建文件夹失败")
+			}
+		}
+		fileName = filePath + "MultiVAC" + CurrentTime + ".json"
+	}
 	file, err := os.Create(fileName)
+	defer file.Close()
 	if err != nil {
 		return "", fmt.Errorf("创建文件失败，%v", err)
 	}
-	defer file.Close()
 	_, err = file.Write(keystore2Json)
 	if err != nil {
 		return "", fmt.Errorf("写入文件失败，%v", err)
 	}
-	return fileName[2:], nil
+	return fileName, nil
 }
 
 // aesCVrtCryPt使用aes-128-ctr密文进行加密和解密(Ctr模式的加密和解密都是同一个函数).
@@ -147,7 +169,7 @@ func GetPrivatekeyFromKeystore(password string, params *KdfParam, cipherText []b
 	if err != nil {
 		return "", fmt.Errorf("生成解密证书失败，%v", err)
 	}
-	jsonMac := crypto.Keccak256(certificate, cipherText)
+	jsonMac := crypto2.Keccak256(certificate, cipherText)
 	if bytes.Equal(mac, jsonMac) == false {
 		return "", fmt.Errorf("Json被篡改或者密码错误无法解密")
 	}
@@ -181,9 +203,14 @@ func GetAllJsonFiles(path string, s []string) ([]string, error) {
 	if err != nil {
 		return s, err
 	}
+	var fullName string
 	for _, fi := range rd {
 		if !fi.IsDir() {
-			fullName := fi.Name()
+			if runtime.GOOS == "windows" {
+				fullName = path + "\\" + fi.Name()
+			} else {
+				fullName = path + "/" + fi.Name()
+			}
 			if strings.Contains(fullName, "json") {
 				s = append(s, fullName)
 			}
