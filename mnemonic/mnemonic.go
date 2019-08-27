@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	"strings"
 
 	"github.com/tyler-smith/go-bip39"
 	"golang.org/x/crypto/ed25519"
@@ -27,50 +28,47 @@ func GenerateMnemonicByLength(length int) (*Account, error) {
 		24: 256,
 	}
 	if _, ok := mneMap[length]; !ok {
-		return &Account{
-			PublicKey:  "",
-			PrivateKey: "",
-			Mnemonic:   "",
-		}, fmt.Errorf("非法长度,长度必须为（其中一个）:12，15，18，21，24")
+		return nil, fmt.Errorf("非法长度,长度必须为（其中一个）:12，15，18，21，24")
 	}
 	bitSize := mneMap[length]
 	entropy, err := bip39.NewEntropy(bitSize)
 	if err != nil {
-		return &Account{
-			PublicKey:  "",
-			PrivateKey: "",
-			Mnemonic:   "",
-		}, fmt.Errorf("生成随机序列失败,err:%v", err)
+		return nil, fmt.Errorf("生成随机序列失败,err:%v", err)
 	}
 	mnemonic, err := bip39.NewMnemonic(entropy)
+	mnemonic = strings.Trim(mnemonic, "\r\n")
 	if err != nil {
-		return &Account{
-			PublicKey:  "",
-			PrivateKey: "",
-			Mnemonic:   "",
-		}, fmt.Errorf("助记词字典加载错误,err:%v", err)
+		return nil, fmt.Errorf("助记词字典加载错误,err:%v", err)
 	}
 	// Default that there is no password.
 	seed := bip39.NewSeed(mnemonic, "")
 	seedForMultiVAC := seed[:32]
 	reader := bytes.NewReader(seedForMultiVAC)
 	pub, prv, err := ed25519.GenerateKey(reader)
+	////test
+	//fmt.Println(prv)
+	//fmt.Println(pub)
+	//fmt.Println(len(prv))
+	//fmt.Println(len(pub))
+	hexPrv := hex.EncodeToString(prv)
+	//fmt.Println(hexPrv)
+	//fmt.Println(len(hexPrv))
+	hexPub := hex.EncodeToString(pub)
+	//fmt.Println(hexPub)
+	//fmt.Println(len(hexPub))
+	////test
 	if err != nil {
-		return &Account{
-			PrivateKey: "",
-			PublicKey:  "",
-			Mnemonic:   "",
-		}, fmt.Errorf("密钥生成失败，err:%v", err)
+		return nil, fmt.Errorf("密钥生成失败，err:%v", err)
 	}
 	return &Account{
-		PrivateKey: hex.EncodeToString(prv),
-		PublicKey:  hex.EncodeToString(pub),
+		PrivateKey: hexPrv,
+		PublicKey:  hexPub,
 		Mnemonic:   mnemonic,
 	}, nil
 }
 
 // MnemonicToPrivateKey get private key and public key by using mnemonic.Returns publickey,privatekey,error
-func MnemonicToPrivateKey(mnemonic string) (string, string, error) {
+func MnemonicToAccount(mnemonic string) (string, string, error) {
 	seed := bip39.NewSeed(mnemonic, "")
 	seedForMultiVAC := seed[:32]
 	reader := bytes.NewReader(seedForMultiVAC)

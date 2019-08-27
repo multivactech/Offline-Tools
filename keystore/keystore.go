@@ -9,13 +9,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/ethereum/go-ethereum/crypto"
 	"golang.org/x/crypto/scrypt"
 )
 
-// KdfParam用于存储PBKDF2算法生成证书(密钥)用到的参数，必须满足：1.n为2的幂 2.p*r<2^30
+// KdfParam用于存储PBKDF2算法生成证书(密钥)用到的参数，必须满足：1.n为2的幂 2.p*r<2^30.
 type KdfParam struct {
 	N      int    `json:"n"`
 	R      int    `json:"r"`
@@ -24,13 +25,13 @@ type KdfParam struct {
 	Salt   []byte `json:"salt"`
 }
 
-// CipherParams用于存储aes-128-ctr加密算法所需要用的必要参数
+// CipherParams用于存储aes-128-ctr加密算法所需要用的必要参数.
 type CipherParams struct {
 	//aes-128-ctr用到的初始化向量
 	Iv []byte
 }
 
-// KeystoreJson用于进行json编码存储与本地
+// KeystoreJson用于进行json编码存储与本地.
 type KeyStoreJson struct {
 	Kdfparam     *KdfParam    `json:"kdfparam"`
 	CipherParams CipherParams `json:"cipher_params"`
@@ -42,7 +43,7 @@ type KeyStoreJson struct {
 	Project      string       `json:"project"`
 }
 
-// generateCertificate根据输入的密码生成一个用于AES算法加密用到的证书（密钥）
+// generateCertificate根据输入的密码生成一个用于AES算法加密用到的证书（密钥）.
 func generateCertificate(password []byte) ([]byte, *KdfParam, error) {
 	var n int = 32768
 	var r int = 8
@@ -62,7 +63,7 @@ func generateCertificate(password []byte) ([]byte, *KdfParam, error) {
 	}, nil
 }
 
-// MakeKeyStore根据传入的密码和私钥进行加密在程序目录下生成一个json文件，返回文件名
+// MakeKeyStore根据传入的密码和私钥进行加密在程序目录下生成一个json文件，返回文件名.
 func MakeKeyStore(password, privateKey []byte) (string, error) {
 	certificate, kdfparams, err := generateCertificate(password)
 	if err != nil {
@@ -89,21 +90,21 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("转化为json文件失败：%v", err)
 	}
-	CurrentTime := time.Now().String()
-	fileName := fmt.Sprintf("MultiVAC%v.json", CurrentTime)
+	CurrentTime := time.Now().Format("2006-1-2 15:04:05")
+	fileName := fmt.Sprintf("./MultiVAC%v.json", CurrentTime)
 	file, err := os.Create(fileName)
-	defer file.Close()
 	if err != nil {
 		return "", fmt.Errorf("创建文件失败，%v", err)
 	}
+	defer file.Close()
 	_, err = file.Write(keystore2Json)
 	if err != nil {
 		return "", fmt.Errorf("写入文件失败，%v", err)
 	}
-	return fileName, nil
+	return fileName[2:], nil
 }
 
-// aesCVrtCryPt使用aes-128-ctr密文进行加密和解密(Ctr模式的加密和解密都是同一个函数)
+// aesCVrtCryPt使用aes-128-ctr密文进行加密和解密(Ctr模式的加密和解密都是同一个函数).
 func aesCtrCrypt(text []byte, key []byte) ([]byte, []byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
@@ -148,7 +149,7 @@ func GetPrivatekeyFromKeystore(password string, params *KdfParam, cipherText []b
 	}
 	jsonMac := crypto.Keccak256(certificate, cipherText)
 	if bytes.Equal(mac, jsonMac) == false {
-		return "", fmt.Errorf("Json被篡改无法解密")
+		return "", fmt.Errorf("Json被篡改或者密码错误无法解密")
 	}
 	privateKey, _, err := aesCtrCrypt([]byte(cipherText), certificate)
 	if err != nil {
@@ -160,6 +161,7 @@ func GetPrivatekeyFromKeystore(password string, params *KdfParam, cipherText []b
 	return string(privateKey), nil
 }
 
+// isLegal check if the private key is legal.
 func isLegal(privateKey []byte) bool {
 	if len(privateKey) != 128 {
 		return false
@@ -168,4 +170,21 @@ func isLegal(privateKey []byte) bool {
 		return false
 	}
 	return true
+}
+
+// GetAllJsonFiles read all json files in local folder.
+func GetAllJsonFiles(path string, s []string) ([]string, error) {
+	rd, err := ioutil.ReadDir(path)
+	if err != nil {
+		return s, err
+	}
+	for _, fi := range rd {
+		if !fi.IsDir() {
+			fullName := fi.Name()
+			if strings.Contains(fullName, "json") {
+				s = append(s, fullName)
+			}
+		}
+	}
+	return s, nil
 }
