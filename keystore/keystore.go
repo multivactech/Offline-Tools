@@ -104,7 +104,7 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 		}
 		fileName = filePath + "MultiVAC" + CurrentTime + ".json"
 	} else {
-		filePath := "~/MultiVACkeystore"
+		filePath := "./MultiVACkeystore"
 		_, err := os.Stat(filePath)
 		if err != nil {
 			err := os.Mkdir(filePath, os.ModePerm)
@@ -112,7 +112,7 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 				return "", fmt.Errorf("创建文件夹失败")
 			}
 		}
-		fileName = filePath + "MultiVAC" + CurrentTime + ".json"
+		fileName = filePath + "/MultiVAC" + CurrentTime + ".json"
 	}
 	file, err := os.Create(fileName)
 	defer file.Close()

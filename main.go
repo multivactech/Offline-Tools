@@ -181,7 +181,7 @@ func main() {
 						os.Exit(0)
 					}
 				} else {
-					dir = "~/MultiVACkeystore"
+					dir = "./MultiVACkeystore"
 					_, err := os.Stat(dir)
 					if err != nil {
 						fmt.Println("keystore存储文件夹不存在")
