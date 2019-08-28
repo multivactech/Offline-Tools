@@ -12,7 +12,7 @@ type PrivateKey ed25519.PrivateKey
 func Sign(privateKey string, message string) ([]byte, error) {
 	binaryPrv, err := IsLegal(privateKey)
 	if err != nil {
-		return nil, fmt.Errorf("私钥不合法")
+		return nil, fmt.Errorf("私钥不合法,err:%v", err)
 	}
 	binaryMsg, err := hex.DecodeString(string(message))
 	if err != nil {
@@ -30,8 +30,7 @@ func IsLegal(privateKey string) ([]byte, error) {
 	val, err := hex.DecodeString(privateKey)
 	if err != nil {
 		return nil, err
-	} else {
-		return val, nil
 	}
+	return val, nil
 
 }
