@@ -53,7 +53,7 @@ func generateCertificate(password []byte) ([]byte, *KdfParam, error) {
 	var salt []byte = []byte("MultiVAC")
 	certificate, err := scrypt.Key(password, salt, n, r, p, kenLen)
 	if err != nil {
-		return nil, nil, fmt.Errorf("生成证书失败，%v", err)
+		return nil, nil, fmt.Errorf("生成证书失败，err:%v", err)
 	}
 	return certificate, &KdfParam{
 		N:      n,
@@ -72,7 +72,7 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 	}
 	cipherText, iv, err := aesCtrCrypt(privateKey, certificate)
 	if err != nil {
-		return "", fmt.Errorf("加密失败，%v", err)
+		return "", fmt.Errorf("加密失败，err:%v", err)
 	}
 	mac := crypto2.Keccak256(certificate, cipherText)
 	keyStoreFile := KeyStoreJson{
@@ -89,7 +89,7 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 	}
 	keystore2Json, err := json.Marshal(keyStoreFile)
 	if err != nil {
-		return "", fmt.Errorf("转化为json文件失败：%v", err)
+		return "", fmt.Errorf("转化为json文件失败：err:%v", err)
 	}
 	var fileName string
 	CurrentTime := time.Now().Format("2006-1-2-15-04-05")
@@ -99,7 +99,7 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 		if err != nil {
 			err := os.Mkdir(filePath, os.ModePerm)
 			if err != nil {
-				return "", fmt.Errorf("创建文件keystore文件夹失败")
+				return "", fmt.Errorf("创建文件keystore文件夹失败,err:%v", err)
 			}
 		}
 		fileName = filePath + "MultiVAC" + CurrentTime + ".json"
@@ -109,7 +109,7 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 		if err != nil {
 			err := os.Mkdir(filePath, os.ModePerm)
 			if err != nil {
-				return "", fmt.Errorf("创建文件夹失败")
+				return "", fmt.Errorf("创建文件夹失败,err:%v", err)
 			}
 		}
 		fileName = filePath + "/MultiVAC" + CurrentTime + ".json"
@@ -117,11 +117,11 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 	file, err := os.Create(fileName)
 	defer file.Close()
 	if err != nil {
-		return "", fmt.Errorf("创建文件失败，%v", err)
+		return "", fmt.Errorf("创建文件失败，err:%v", err)
 	}
 	_, err = file.Write(keystore2Json)
 	if err != nil {
-		return "", fmt.Errorf("写入文件失败，%v", err)
+		return "", fmt.Errorf("写入文件失败，err:%v", err)
 	}
 	return fileName, nil
 }
@@ -144,12 +144,12 @@ func aesCtrCrypt(text []byte, key []byte) ([]byte, []byte, error) {
 func ReadJson(fileName string) ([]byte, *KdfParam, []byte, error) {
 	file, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("读取json文件错误，%v", err)
+		return nil, nil, nil, fmt.Errorf("读取json文件错误，err:%v", err)
 	}
 	var total KeyStoreJson
 	err = json.Unmarshal(file, &total)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("json解析失败，%v", err)
+		return nil, nil, nil, fmt.Errorf("json解析失败，err:%v", err)
 	}
 	saltString := string(total.Kdfparam.Salt)
 	param := &KdfParam{
@@ -167,7 +167,7 @@ func ReadJson(fileName string) ([]byte, *KdfParam, []byte, error) {
 func GetPrivatekeyFromKeystore(password string, params *KdfParam, cipherText []byte, mac []byte) (string, error) {
 	certificate, err := scrypt.Key([]byte(password), params.Salt, params.N, params.R, params.P, params.KeyLen)
 	if err != nil {
-		return "", fmt.Errorf("生成解密证书失败，%v", err)
+		return "", fmt.Errorf("生成解密证书失败，err:%v", err)
 	}
 	jsonMac := crypto2.Keccak256(certificate, cipherText)
 	if bytes.Equal(mac, jsonMac) == false {
@@ -175,11 +175,11 @@ func GetPrivatekeyFromKeystore(password string, params *KdfParam, cipherText []b
 	}
 	privateKey, _, err := aesCtrCrypt([]byte(cipherText), certificate)
 	if err != nil {
-		return "", fmt.Errorf("解密失败，%v", err)
+		return "", fmt.Errorf("解密失败，err:%v", err)
 	}
 	_, err = isLegal(string(privateKey))
 	if err != nil {
-		return "", fmt.Errorf("解密失败，json被篡改")
+		return "", fmt.Errorf("解密失败，json被篡改,err:%v", err)
 	}
 	return string(privateKey), nil
 }

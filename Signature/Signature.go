@@ -16,7 +16,7 @@ func Sign(privateKey string, message string) ([]byte, error) {
 	}
 	binaryMsg, err := hex.DecodeString(string(message))
 	if err != nil {
-		return nil, fmt.Errorf("签名的数据不合法,%v", err)
+		return nil, fmt.Errorf("签名的数据不合法,err:%v", err)
 	}
 	// 已经在上面进行来检测，所以这里不需要处理错误.
 	return ed25519.Sign(ed25519.PrivateKey(binaryPrv), binaryMsg), nil
