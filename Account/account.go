@@ -19,7 +19,7 @@ func GenerateAccount() (PublicKey, PrivateKey, error) {
 }
 
 // PrivatekeyToPublickey get the public key for the input private key.
-func PrivatekeyToPublickey(prv string) ([]byte, error) {
+func PrivatekeyToPublickey(prv string) (PublicKey, error) {
 	prvToBinary, err := isLegal(prv)
 	if err != nil {
 		return nil, fmt.Errorf("私钥不合法,err:%v", err)
