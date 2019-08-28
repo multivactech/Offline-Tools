@@ -26,4 +26,4 @@ go build main.go
 ## 注意事项：
 
 1. 助记词和私钥具有等同地位，助记词泄漏意味着私钥泄漏，所以务必保存好助记词，不要让他人知晓。
-2. keystore的密码请务必记清楚，keystore生成的json文件在window系统下位于"C:\MultiVACkeystore"文件夹内，读取的时候程序会自动该目录下的json文件；在Mac os和Linux系统中，json文件生成的文件夹为"./MultiVACkeystore"文件夹，keystore需要使用密码解密时请将keystore文件放到该目录下即可读取。
+2. keystore的密码请务必记清楚，keystore生成的json文件在window系统下位于"C:\MultiVACkeystore"文件夹内，读取的时候程序会自动该目录下的json文件；在Mac os和Linux系统中，json文件生成的文件夹为"user/username/MultiVACkeystore"文件夹（username为当前账户的用户名），keystore需要使用密码解密时请将keystore文件放到该目录下即可读取。
