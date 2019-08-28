@@ -17,7 +17,7 @@ type Account struct {
 	Mnemonic   string
 }
 
-// GenerateMnemonicByLength generate mnemonic and then use mnemonic to generate the private key and its public key
+// GenerateMnemonicByLength generate mnemonic and then use mnemonic to generate the private key and its public key.
 func GenerateMnemonicByLength(length int) (*Account, error) {
 	// Length of mnemonic must be in the key list in mneMap.If length is error，there will no mnemonic.
 	mneMap := map[int]int{
@@ -57,7 +57,7 @@ func GenerateMnemonicByLength(length int) (*Account, error) {
 	}, nil
 }
 
-// MnemonicToPrivateKey get private key and public key by using mnemonic.Returns publickey,privatekey,error
+// MnemonicToPrivateKey get private key and public key by using mnemonic.Returns publickey,privatekey,error.
 func MnemonicToAccount(mnemonic string) (string, string, error) {
 	seed := bip39.NewSeed(mnemonic, "")
 	seedForMultiVAC := seed[:32]

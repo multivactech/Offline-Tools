@@ -140,7 +140,7 @@ func aesCtrCrypt(text []byte, key []byte) ([]byte, []byte, error) {
 	return message, iv, nil
 }
 
-// ReadJson用于读取指定文件名的json文件，返回解密必要的数据:ciphertext,kdfparam,err
+// ReadJson用于读取指定文件名的json文件，返回解密必要的数据:ciphertext,kdfparam,err.
 func ReadJson(fileName string) ([]byte, *KdfParam, []byte, error) {
 	file, err := ioutil.ReadFile(fileName)
 	if err != nil {
