@@ -21,18 +21,3 @@ func TestGenerateMnemonicByLength(t *testing.T) {
 	}
 	fmt.Println(account)
 }
-func TestGenerateMnemonicByLength2(t *testing.T) {
-	for i := 0; i < 10000; i++ {
-		ac, _ := GenerateMnemonicByLength(24)
-		mne := ac.Mnemonic
-		prv1 := ac.PrivateKey
-		pub1 := ac.PublicKey
-		pub2, prv2, _ := MnemonicToAccount(mne)
-		if prv1 == prv2 && pub1 == pub2 {
-			fmt.Println("第", i, "个成功")
-		} else {
-			fmt.Println("失败")
-			break
-		}
-	}
-}

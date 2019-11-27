@@ -6,6 +6,7 @@ import (
 	"golang.org/x/crypto/ed25519"
 )
 
+// PrivateKey defines the data structure of MultiVAC project private key.
 type PrivateKey ed25519.PrivateKey
 
 // Sign the data with a private key.

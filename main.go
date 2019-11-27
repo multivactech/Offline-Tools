@@ -21,7 +21,7 @@ func main() {
 	inByte, err := bufReader.ReadByte()
 	if err != nil {
 		fmt.Println("读取键盘输入错误")
-		os.Exit(0)
+		os.Exit(1)
 	}
 	switch inByte - 48 {
 	case 1:
@@ -30,7 +30,7 @@ func main() {
 		inByte, err = bufReader.ReadByte()
 		if err != nil {
 			fmt.Println("读取键盘输入错误")
-			os.Exit(0)
+			os.Exit(1)
 		}
 		switch inByte - 48 {
 		case 1:
@@ -39,7 +39,7 @@ func main() {
 				account, err := mnemonic.GenerateMnemonicByLength(24)
 				if err != nil {
 					fmt.Println(err)
-					os.Exit(0)
+					os.Exit(1)
 				}
 				fmt.Println("助记词:", account.Mnemonic)
 				fmt.Println("私钥:", account.PrivateKey)
@@ -51,23 +51,23 @@ func main() {
 				inByte, err := bufReader.ReadByte()
 				if err != nil {
 					fmt.Println("读取键盘输入错误")
-					os.Exit(0)
+					os.Exit(1)
 				}
 				if int(inByte)-48 != 1 {
-					os.Exit(0)
+					os.Exit(1)
 				}
 				fmt.Printf("输入加密的密码:")
 				bufReader = bufio.NewReader(os.Stdin)
 				pass, err := bufReader.ReadString('\n')
 				if err != nil {
 					fmt.Println(err)
-					os.Exit(0)
+					os.Exit(1)
 				}
 				pass = strings.Trim(pass, "\r\n")
 				fileName, err := keystore.MakeKeyStore([]byte(pass), []byte(account.PrivateKey))
 				if err != nil {
 					fmt.Println(err)
-					os.Exit(0)
+					os.Exit(1)
 				}
 				fmt.Println("keystore已经生成到:", fileName)
 			}()
@@ -77,7 +77,7 @@ func main() {
 				pub, prv, err := Account.GenerateAccount()
 				if err != nil {
 					fmt.Println("出现异常:", err)
-					os.Exit(0)
+					os.Exit(1)
 				}
 				prvString := hex.EncodeToString(prv)
 				pubString := hex.EncodeToString(pub)
@@ -90,28 +90,28 @@ func main() {
 				inByte, err := bufReader.ReadByte()
 				if err != nil {
 					fmt.Println("读取键盘输入错误")
-					os.Exit(0)
+					os.Exit(1)
 				}
 				if int(inByte)-48 != 1 {
-					os.Exit(0)
+					os.Exit(1)
 				}
 				fmt.Printf("输入加密的密码:")
 				bufReader = bufio.NewReader(os.Stdin)
 				pass, err := bufReader.ReadString('\n')
 				if err != nil {
 					fmt.Println(err)
-					os.Exit(0)
+					os.Exit(1)
 				}
 				pass = strings.Trim(pass, "\r\n")
 				fileName, err := keystore.MakeKeyStore([]byte(pass), []byte(prvString))
 				if err != nil {
 					fmt.Println(err)
-					os.Exit(0)
+					os.Exit(1)
 				}
 				fmt.Println("keystore已经生成到:", fileName)
 			}()
 		default:
-			os.Exit(0)
+			os.Exit(1)
 		}
 	case 2:
 		showPrivateMenu()
@@ -119,7 +119,7 @@ func main() {
 		inByte, err = bufReader.ReadByte()
 		if err != nil {
 			fmt.Println("读取键盘输入错误")
-			os.Exit(0)
+			os.Exit(1)
 		}
 		switch inByte - 48 {
 		case 1:
@@ -131,12 +131,12 @@ func main() {
 				mne = strings.Trim(mne, "\r\n")
 				if err != nil {
 					fmt.Println("读取私钥错误")
-					os.Exit(0)
+					os.Exit(1)
 				}
 				pub, prv, err := mnemonic.MnemonicToAccount(mne)
 				if err != nil {
 					fmt.Println(err)
-					os.Exit(0)
+					os.Exit(1)
 				}
 				fmt.Println(len(prv))
 				fmt.Println("私钥:", prv)
@@ -148,23 +148,23 @@ func main() {
 				inByte, err := bufReader.ReadByte()
 				if err != nil {
 					fmt.Println("读取键盘输入错误")
-					os.Exit(0)
+					os.Exit(1)
 				}
 				if int(inByte)-48 != 1 {
-					os.Exit(0)
+					os.Exit(1)
 				}
 				fmt.Printf("输入加密的密码:")
 				bufReader = bufio.NewReader(os.Stdin)
 				pass, err := bufReader.ReadString('\n')
 				if err != nil {
 					fmt.Println(err)
-					os.Exit(0)
+					os.Exit(1)
 				}
 				pass = strings.Trim(pass, "\r\n")
 				fileName, err := keystore.MakeKeyStore([]byte(pass), []byte(prv))
 				if err != nil {
 					fmt.Println(err)
-					os.Exit(0)
+					os.Exit(1)
 				}
 				fmt.Println("keystore已经生成到:", fileName)
 			}()
@@ -178,24 +178,24 @@ func main() {
 					_, err := os.Stat(dir)
 					if err != nil {
 						fmt.Println("keystore存储文件夹不存在")
-						os.Exit(0)
+						os.Exit(1)
 					}
 				} else {
 					dir = "./MultiVACkeystore"
 					_, err := os.Stat(dir)
 					if err != nil {
 						fmt.Println("keystore存储文件夹不存在")
-						os.Exit(0)
+						os.Exit(1)
 					}
 				}
-				fileSlice, err = keystore.GetAllJsonFiles(dir, fileSlice)
+				fileSlice, err = keystore.GetAllJSONFiles(dir, fileSlice)
 				if err != nil {
 					fmt.Println(err)
-					os.Exit(0)
+					os.Exit(1)
 				}
 				if len(fileSlice) == 0 {
 					fmt.Println("在程序指定目录下没有发现keystore文件")
-					os.Exit(0)
+					os.Exit(1)
 				}
 				fmt.Printf("编号\t  文件名\n")
 				for in, val := range fileSlice {
@@ -207,16 +207,16 @@ func main() {
 				inByte = strings.Trim(inByte, "\r\n")
 				if err != nil {
 					fmt.Println("读取键盘输入错误")
-					os.Exit(0)
+					os.Exit(1)
 				}
 				index, err := strconv.Atoi(inByte)
 				if err != nil {
 					fmt.Println("读取键盘输入错误")
-					os.Exit(0)
+					os.Exit(1)
 				}
 				if index > len(fileSlice)-1 || index < 0 {
 					fmt.Println("输入编号有误")
-					os.Exit(0)
+					os.Exit(1)
 				}
 				jsonName := fileSlice[index]
 				fmt.Printf("输入解锁的密码:")
@@ -224,18 +224,18 @@ func main() {
 				pass, err := bufReader.ReadString('\n')
 				if err != nil {
 					fmt.Println(err)
-					os.Exit(0)
+					os.Exit(1)
 				}
 				pass = strings.Trim(pass, "\r\n")
-				data, err := keystore.ReadJson(jsonName)
+				data, err := keystore.ReadJSON(jsonName)
 				if err != nil {
 					fmt.Println(err)
-					os.Exit(0)
+					os.Exit(1)
 				}
 				prv, err := keystore.GetPrivatekeyFromKeystore(pass, data)
 				if err != nil {
 					fmt.Println(err)
-					os.Exit(0)
+					os.Exit(1)
 				}
 				fmt.Println("解密后私钥：", prv)
 				pub, err := Account.PrivatekeyToPublickey(prv)
@@ -246,7 +246,7 @@ func main() {
 
 			}()
 		default:
-			os.Exit(0)
+			os.Exit(1)
 		}
 	case 3:
 		// Get public key from private key.
@@ -257,12 +257,12 @@ func main() {
 			privateKeyString = strings.Trim(privateKeyString, "\r\n")
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(0)
+				os.Exit(1)
 			}
 			pub, err := Account.PrivatekeyToPublickey(privateKeyString)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(0)
+				os.Exit(1)
 			}
 			fmt.Println("对应的公钥:", hex.EncodeToString(pub))
 			fmt.Println("=======================")
@@ -272,23 +272,23 @@ func main() {
 			inByte, err := bufReader.ReadByte()
 			if err != nil {
 				fmt.Println("读取键盘输入错误")
-				os.Exit(0)
+				os.Exit(1)
 			}
 			if int(inByte)-48 != 1 {
-				os.Exit(0)
+				os.Exit(1)
 			}
 			fmt.Printf("输入加密的密码:")
 			bufReader = bufio.NewReader(os.Stdin)
 			pass, err := bufReader.ReadString('\n')
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(0)
+				os.Exit(1)
 			}
 			pass = strings.Trim(pass, "\r\n")
 			fileName, err := keystore.MakeKeyStore([]byte(pass), []byte(privateKeyString))
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(0)
+				os.Exit(1)
 			}
 			fmt.Println("keystore已经生成到:", fileName)
 		}()
@@ -301,26 +301,30 @@ func main() {
 			privateKeyString = strings.Trim(privateKeyString, "\r\n")
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(0)
+				os.Exit(1)
 			}
 			_, err = signature.IsLegal(privateKeyString)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(0)
+				os.Exit(1)
 			}
 			fmt.Println("输入需要签名的数据:")
 			cmdReader = bufio.NewReader(os.Stdin)
 			transaction, err := cmdReader.ReadString('\n')
+			if err!=nil{
+				fmt.Println("读取签名数据失败,err:%v",err)
+				os.Exit(1)
+			}
 			transaction = strings.Trim(transaction, "\r\n")
 			sig, err := signature.Sign(privateKeyString, transaction)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(0)
+				os.Exit(1)
 			}
 			fmt.Println("签名的消息为:", hex.EncodeToString(sig))
 		}()
 	default:
-		os.Exit(0)
+		os.Exit(1)
 	}
 }
 func showMainMenu() {
