@@ -67,26 +67,9 @@ func generateCertificate(password []byte) ([]byte, *KdfParam, error) {
 // MakeKeyStore encrypts the incoming password and private key to
 // generate a json file in the program directory and returns the filename.
 func MakeKeyStore(password, privateKey []byte) (string, error) {
-	certificate, kdfparams, err := generateCertificate(password)
+	keyStoreFile, err := CreateKeyStore(password, privateKey)
 	if err != nil {
-		return "", err
-	}
-	cipherText, iv, err := aesCtrCrypt(privateKey, certificate)
-	if err != nil {
-		return "", fmt.Errorf("加密失败，err:%v", err)
-	}
-	mac := crypto2.Keccak256(certificate, cipherText)
-	keyStoreFile := KeyStoreJson{
-		Kdfparam: kdfparams,
-		CipherParams: CipherParams{
-			Iv: iv,
-		},
-		Cipher:     "aes-128-ctr",
-		CipherText: cipherText,
-		Kdf:        "PBKDF2",
-		Mac:        mac,
-		Version:    "1.0",
-		Project:    "MultiVAC",
+		return "", fmt.Errorf("failed to create keystore:err:%v", err)
 	}
 	keystore2Json, err := json.Marshal(keyStoreFile)
 	if err != nil {
@@ -125,6 +108,32 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 		return "", fmt.Errorf("failed to write data to file，err:%v", err)
 	}
 	return fileName, nil
+}
+
+//CreateKeyStore create a keystore structure
+func CreateKeyStore(password, privateKey []byte) (KeyStoreJson, error) {
+	certificate, kdfparams, err := generateCertificate(password)
+	if err != nil {
+		return KeyStoreJson{}, err
+	}
+	cipherText, iv, err := aesCtrCrypt(privateKey, certificate)
+	if err != nil {
+		return KeyStoreJson{}, err
+	}
+	mac := crypto2.Keccak256(certificate, cipherText)
+	keyStore := KeyStoreJson{
+		Kdfparam: kdfparams,
+		CipherParams: CipherParams{
+			Iv: iv,
+		},
+		Cipher:     "aes-128-ctr",
+		CipherText: cipherText,
+		Kdf:        "PBKDF2",
+		Mac:        mac,
+		Version:    "1.0",
+		Project:    "MultiVAC",
+	}
+	return keyStore, nil
 }
 
 // aesCVrtCryPt uses aes-128-ctr ciphertext for encryption and decryption.
