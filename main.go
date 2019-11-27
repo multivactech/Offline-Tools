@@ -36,7 +36,7 @@ func main() {
 		case 1:
 			// Use mnemonic to generate account.
 			func() {
-				account, err := mnemonic.GenerateMnemonicByLength(12)
+				account, err := mnemonic.GenerateMnemonicByLength(24)
 				if err != nil {
 					fmt.Println(err)
 					os.Exit(0)
@@ -227,18 +227,21 @@ func main() {
 					os.Exit(0)
 				}
 				pass = strings.Trim(pass, "\r\n")
-				ciphertext, params, mac, err := keystore.ReadJson(jsonName)
+				data, err := keystore.ReadJson(jsonName)
 				if err != nil {
 					fmt.Println(err)
 					os.Exit(0)
 				}
-				prv, err := keystore.GetPrivatekeyFromKeystore(pass, params, ciphertext, mac)
+				prv, err := keystore.GetPrivatekeyFromKeystore(pass, data)
 				if err != nil {
 					fmt.Println(err)
 					os.Exit(0)
 				}
 				fmt.Println("解密后私钥：", prv)
 				pub, err := Account.PrivatekeyToPublickey(prv)
+				if err != nil {
+					fmt.Printf("出现未知错误,err:%v", err)
+				}
 				fmt.Println("公钥:", hex.EncodeToString(pub))
 
 			}()

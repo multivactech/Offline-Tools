@@ -17,7 +17,7 @@ import (
 	"golang.org/x/crypto/scrypt"
 )
 
-// KdfParam用于存储PBKDF2算法生成证书(密钥)用到的参数，必须满足：1.n为2的幂 2.p*r<2^30.
+// KdfParam is used to store the parameters used by the PBKDF2 algorithm to generate the certificate.
 type KdfParam struct {
 	N      int    `json:"n"`
 	R      int    `json:"r"`
@@ -26,13 +26,13 @@ type KdfParam struct {
 	Salt   []byte `json:"salt"`
 }
 
-// CipherParams用于存储aes-128-ctr加密算法所需要用的必要参数.
+// CipherParams is used to store the necessary parameters required by the aes-128-ctr encryption algorithm.
 type CipherParams struct {
-	//aes-128-ctr用到的初始化向量
+	// aes-128-ctr initialization vector
 	Iv []byte
 }
 
-// KeystoreJson用于进行json编码存储与本地.
+// KeystoreJson is used for json encoding storage and local.
 type KeyStoreJson struct {
 	Kdfparam     *KdfParam    `json:"kdfparam"`
 	CipherParams CipherParams `json:"cipher_params"`
@@ -44,7 +44,7 @@ type KeyStoreJson struct {
 	Project      string       `json:"project"`
 }
 
-// generateCertificate根据输入的密码生成一个用于AES算法加密用到的证书（密钥）.
+// generateCertificate generates a certificate for AES algorithm encryption based on the entered password.
 func generateCertificate(password []byte) ([]byte, *KdfParam, error) {
 	var n int = 32768
 	var r int = 8
@@ -64,7 +64,8 @@ func generateCertificate(password []byte) ([]byte, *KdfParam, error) {
 	}, nil
 }
 
-// MakeKeyStore根据传入的密码和私钥进行加密在程序目录下生成一个json文件，返回文件名.
+// MakeKeyStore encrypts the incoming password and private key to
+// generate a json file in the program directory and returns the filename.
 func MakeKeyStore(password, privateKey []byte) (string, error) {
 	certificate, kdfparams, err := generateCertificate(password)
 	if err != nil {
@@ -89,7 +90,7 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 	}
 	keystore2Json, err := json.Marshal(keyStoreFile)
 	if err != nil {
-		return "", fmt.Errorf("转化为json文件失败：err:%v", err)
+		return "", fmt.Errorf("failed to convert to json:err:%v", err)
 	}
 	var fileName string
 	CurrentTime := time.Now().Format("2006-1-2-15-04-05")
@@ -99,7 +100,7 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 		if err != nil {
 			err := os.Mkdir(filePath, os.ModePerm)
 			if err != nil {
-				return "", fmt.Errorf("创建文件keystore文件夹失败,err:%v", err)
+				return "", fmt.Errorf("failed to create keystore folder,err:%v", err)
 			}
 		}
 		fileName = filePath + "MultiVAC" + CurrentTime + ".json"
@@ -109,7 +110,7 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 		if err != nil {
 			err := os.Mkdir(filePath, os.ModePerm)
 			if err != nil {
-				return "", fmt.Errorf("创建文件夹失败,err:%v", err)
+				return "", fmt.Errorf("failed to create folder,err:%v", err)
 			}
 		}
 		fileName = filePath + "/MultiVAC" + CurrentTime + ".json"
@@ -117,22 +118,22 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 	file, err := os.Create(fileName)
 	defer file.Close()
 	if err != nil {
-		return "", fmt.Errorf("创建文件失败，err:%v", err)
+		return "", fmt.Errorf("can not create file，err:%v", err)
 	}
 	_, err = file.Write(keystore2Json)
 	if err != nil {
-		return "", fmt.Errorf("写入文件失败，err:%v", err)
+		return "", fmt.Errorf("failed to write data to file，err:%v", err)
 	}
 	return fileName, nil
 }
 
-// aesCVrtCryPt使用aes-128-ctr密文进行加密和解密(Ctr模式的加密和解密都是同一个函数).
+// aesCVrtCryPt uses aes-128-ctr ciphertext for encryption and decryption.
 func aesCtrCrypt(text []byte, key []byte) ([]byte, []byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, nil, err
 	}
-	// 指定初始向量,长度必须等于block的块尺寸
+	// Specify the initial vector, the length must be equal to the block size of the block.
 	iv := []byte("12345678MultiVAC")
 	blockMode := cipher.NewCTR(block, iv)
 	message := make([]byte, len(text))
@@ -140,54 +141,48 @@ func aesCtrCrypt(text []byte, key []byte) ([]byte, []byte, error) {
 	return message, iv, nil
 }
 
-// ReadJson用于读取指定文件名的json文件，返回解密必要的数据:ciphertext,kdfparam,err.
-func ReadJson(fileName string) ([]byte, *KdfParam, []byte, error) {
+// ReadJson is used to read a json file with the specified file name and return the keystore data structure.
+func ReadJson(fileName string) (KeyStoreJson, error) {
 	file, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("读取json文件错误，err:%v", err)
+		return KeyStoreJson{}, fmt.Errorf("fail to read file，err:%v", err)
 	}
 	var total KeyStoreJson
 	err = json.Unmarshal(file, &total)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("json解析失败，err:%v", err)
+		return KeyStoreJson{}, fmt.Errorf("fail to read data from json，err:%v", err)
 	}
-	saltString := string(total.Kdfparam.Salt)
-	param := &KdfParam{
-		N:      total.Kdfparam.N,
-		R:      total.Kdfparam.R,
-		P:      total.Kdfparam.P,
-		KeyLen: 32,
-		Salt:   []byte(saltString),
-	}
-	cipherText := total.CipherText
-	return cipherText, param, total.Mac, nil
+	return total, nil
 }
 
-// GetPrivatekeyFromKeystore根据用户的密码和必要的参数对加密的私钥进行解密
-func GetPrivatekeyFromKeystore(password string, params *KdfParam, cipherText []byte, mac []byte) (string, error) {
+// GetPrivatekeyFromKeystore decrypts the encrypted private key based on the user's password and necessary parameters.
+func GetPrivatekeyFromKeystore(password string, keystore KeyStoreJson) (string, error) {
+	params := keystore.Kdfparam
+	cipherText := keystore.CipherText
+	mac := keystore.Mac
 	certificate, err := scrypt.Key([]byte(password), params.Salt, params.N, params.R, params.P, params.KeyLen)
 	if err != nil {
-		return "", fmt.Errorf("生成解密证书失败，err:%v", err)
+		return "", fmt.Errorf("failed to generate certificate，err:%v", err)
 	}
 	jsonMac := crypto2.Keccak256(certificate, cipherText)
 	if bytes.Equal(mac, jsonMac) == false {
-		return "", fmt.Errorf("Json被篡改或者密码错误无法解密")
+		return "", fmt.Errorf("the json is tampered or the password cannot be decrypted")
 	}
 	privateKey, _, err := aesCtrCrypt([]byte(cipherText), certificate)
 	if err != nil {
-		return "", fmt.Errorf("解密失败，err:%v", err)
+		return "", fmt.Errorf("decryption failed，err:%v", err)
 	}
 	_, err = isLegal(string(privateKey))
 	if err != nil {
-		return "", fmt.Errorf("解密失败，json被篡改,err:%v", err)
+		return "", fmt.Errorf("decryption failed, json was tampered,err:%v", err)
 	}
 	return string(privateKey), nil
 }
 
-// isLegal check if the private key is legal.
+// isLegal checks if the private key is legal.
 func isLegal(privateKey string) ([]byte, error) {
 	if len(privateKey) != 128 {
-		return nil, fmt.Errorf("长度错误")
+		return nil, fmt.Errorf("error length of private key")
 	}
 	val, err := hex.DecodeString(privateKey)
 	if err != nil {

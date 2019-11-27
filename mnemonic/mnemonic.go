@@ -28,17 +28,17 @@ func GenerateMnemonicByLength(length int) (*Account, error) {
 		24: 256,
 	}
 	if _, ok := mneMap[length]; !ok {
-		return nil, fmt.Errorf("非法长度,长度必须为（其中一个）:12，15，18，21，24")
+		return nil, fmt.Errorf("illegal length, length must be (one of them):12，15，18，21，24")
 	}
 	bitSize := mneMap[length]
 	entropy, err := bip39.NewEntropy(bitSize)
 	if err != nil {
-		return nil, fmt.Errorf("生成随机序列失败,err:%v", err)
+		return nil, fmt.Errorf("failed to generate random sequence,err:%v", err)
 	}
 	mnemonic, err := bip39.NewMnemonic(entropy)
 	mnemonic = strings.Trim(mnemonic, "\r\n")
 	if err != nil {
-		return nil, fmt.Errorf("助记词字典加载错误,err:%v", err)
+		return nil, fmt.Errorf("mnemonic dictionary loading error,err:%v", err)
 	}
 	// Default that there is no password.
 	seed := bip39.NewSeed(mnemonic, "")
@@ -48,7 +48,7 @@ func GenerateMnemonicByLength(length int) (*Account, error) {
 	hexPrv := hex.EncodeToString(prv)
 	hexPub := hex.EncodeToString(pub)
 	if err != nil {
-		return nil, fmt.Errorf("密钥生成失败，err:%v", err)
+		return nil, fmt.Errorf("failed to generate key，err:%v", err)
 	}
 	return &Account{
 		PrivateKey: hexPrv,
@@ -57,7 +57,7 @@ func GenerateMnemonicByLength(length int) (*Account, error) {
 	}, nil
 }
 
-// MnemonicToPrivateKey get private key and public key by using mnemonic.Returns publickey,privatekey,error.
+// MnemonicToAccount get private key and public key by using mnemonic.Returns publickey,privatekey,error.
 func MnemonicToAccount(mnemonic string) (string, string, error) {
 	seed := bip39.NewSeed(mnemonic, "")
 	seedForMultiVAC := seed[:32]
