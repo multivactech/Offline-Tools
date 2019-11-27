@@ -111,17 +111,17 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 }
 
 //CreateKeyStore create a keystore structure
-func CreateKeyStore(password, privateKey []byte) (KeyStoreJson, error) {
+func CreateKeyStore(password, privateKey []byte) (KeyStoreJSON, error) {
 	certificate, kdfparams, err := generateCertificate(password)
 	if err != nil {
-		return KeyStoreJson{}, err
+		return KeyStoreJSON{}, err
 	}
 	cipherText, iv, err := aesCtrCrypt(privateKey, certificate)
 	if err != nil {
-		return KeyStoreJson{}, err
+		return KeyStoreJSON{}, err
 	}
 	mac := crypto2.Keccak256(certificate, cipherText)
-	keyStore := KeyStoreJson{
+	keyStore := KeyStoreJSON{
 		Kdfparam: kdfparams,
 		CipherParams: CipherParams{
 			Iv: iv,
