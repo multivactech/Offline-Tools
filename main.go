@@ -9,10 +9,10 @@ import (
 	"strconv"
 	"strings"
 
-	"MultiVACTools/Account"
-	signature "MultiVACTools/Signature"
-	"MultiVACTools/keystore"
-	"MultiVACTools/mnemonic"
+	"github.com/multivactech/Offline-Tools/Account"
+	signature "github.com/multivactech/Offline-Tools/Signature"
+	"github.com/multivactech/Offline-Tools/keystore"
+    "github.com/multivactech/Offline-Tools/mnemonic"
 )
 
 func main() {
