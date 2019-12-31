@@ -45,16 +45,16 @@ func HandleSignInfo(unSignedInfoJSONHex string, privKey string) (string, error) 
 }
 
 // Sign the data with a private key.
-func Sign(privateKey string, message string) ([]byte, error) {
+func Sign(privateKey string, message []byte) ([]byte, error) {
 	binaryPrv, err := IsLegal(privateKey)
 	if err != nil {
 		return nil, fmt.Errorf("illegal private key,err:%v", err)
 	}
-	binaryMsg, err := hex.DecodeString(string(message))
+
 	if err != nil {
 		return nil, fmt.Errorf("signed data is illegal,err:%v", err)
 	}
-	return ed25519.Sign(ed25519.PrivateKey(binaryPrv), binaryMsg), nil
+	return ed25519.Sign(ed25519.PrivateKey(binaryPrv), message), nil
 }
 
 // IsLegal checks if the private key is legal.
