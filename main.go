@@ -1,353 +1,170 @@
 package main
 
 import (
-	"bufio"
 	"encoding/hex"
 	"fmt"
+	"github.com/multivactech/Offline-Tools/Account"
+	signature "github.com/multivactech/Offline-Tools/Signature"
+	"github.com/multivactech/Offline-Tools/keystore"
+	"github.com/multivactech/Offline-Tools/mnemonic"
 	"os"
-	"runtime"
-	"strconv"
 	"strings"
 
-	"MultiVACTools/Account"
-	signature "MultiVACTools/Signature"
-	"MultiVACTools/keystore"
-	"MultiVACTools/mnemonic"
+	"github.com/spf13/cobra"
 )
 
-func main() {
-	showMainMenu()
-	bufReader := bufio.NewReader(os.Stdin)
-	inByte, err := bufReader.ReadByte()
-	if err != nil {
-		fmt.Println("读取键盘输入错误")
-		os.Exit(1)
-	}
-	switch inByte - 48 {
-	case 1:
-		showAccountMenu()
-		bufReader = bufio.NewReader(os.Stdin)
-		inByte, err = bufReader.ReadByte()
-		if err != nil {
-			fmt.Println("读取键盘输入错误")
-			os.Exit(1)
-		}
-		switch inByte - 48 {
-		case 1:
-			// Use mnemonic to generate account.
-			func() {
-				account, err := mnemonic.GenerateMnemonicByLength(24)
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-				fmt.Println("助记词:", account.Mnemonic)
-				fmt.Println("私钥:", account.PrivateKey)
-				fmt.Println("公钥:", account.PublicKey)
-				fmt.Println("=======================")
-				fmt.Println("是否生成keystore？1.生成；其他退出")
-				fmt.Printf("请输入:")
-				bufReader := bufio.NewReader(os.Stdin)
-				inByte, err := bufReader.ReadByte()
-				if err != nil {
-					fmt.Println("读取键盘输入错误")
-					os.Exit(1)
-				}
-				if int(inByte)-48 != 1 {
-					os.Exit(1)
-				}
-				fmt.Printf("输入加密的密码:")
-				bufReader = bufio.NewReader(os.Stdin)
-				pass, err := bufReader.ReadString('\n')
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-				pass = strings.Trim(pass, "\r\n")
-				fileName, err := keystore.MakeKeyStore([]byte(pass), []byte(account.PrivateKey))
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-				fmt.Println("keystore已经生成到:", fileName)
-			}()
-		case 2:
-			// Generate account only.
-			func() {
-				pub, prv, err := Account.GenerateAccount()
-				if err != nil {
-					fmt.Println("出现异常:", err)
-					os.Exit(1)
-				}
-				prvString := hex.EncodeToString(prv)
-				pubString := hex.EncodeToString(pub)
-				fmt.Println("私钥:", prvString)
-				fmt.Println("公钥:", pubString)
-				fmt.Println("=======================")
-				fmt.Println("是否生成keystore？1.生成；其他退出")
-				fmt.Printf("请输入:")
-				bufReader := bufio.NewReader(os.Stdin)
-				inByte, err := bufReader.ReadByte()
-				if err != nil {
-					fmt.Println("读取键盘输入错误")
-					os.Exit(1)
-				}
-				if int(inByte)-48 != 1 {
-					os.Exit(1)
-				}
-				fmt.Printf("输入加密的密码:")
-				bufReader = bufio.NewReader(os.Stdin)
-				pass, err := bufReader.ReadString('\n')
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-				pass = strings.Trim(pass, "\r\n")
-				fileName, err := keystore.MakeKeyStore([]byte(pass), []byte(prvString))
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-				fmt.Println("keystore已经生成到:", fileName)
-			}()
-		default:
-			os.Exit(1)
-		}
-	case 2:
-		showPrivateMenu()
-		bufReader = bufio.NewReader(os.Stdin)
-		inByte, err = bufReader.ReadByte()
-		if err != nil {
-			fmt.Println("读取键盘输入错误")
-			os.Exit(1)
-		}
-		switch inByte - 48 {
-		case 1:
-			// Use mnemonic to get private key.
-			func() {
-				fmt.Printf("输入助记词:")
-				bufReader = bufio.NewReader(os.Stdin)
-				mne, err := bufReader.ReadString('\n')
-				mne = strings.Trim(mne, "\r\n")
-				if err != nil {
-					fmt.Println("读取私钥错误")
-					os.Exit(1)
-				}
-				pub, prv, err := mnemonic.MnemonicToAccount(mne)
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-				fmt.Println(len(prv))
-				fmt.Println("私钥:", prv)
-				fmt.Println("公钥:", pub)
-				fmt.Println("=======================")
-				fmt.Println("是否生成keystore？1.生成；其他退出")
-				fmt.Printf("请输入:")
-				bufReader := bufio.NewReader(os.Stdin)
-				inByte, err := bufReader.ReadByte()
-				if err != nil {
-					fmt.Println("读取键盘输入错误")
-					os.Exit(1)
-				}
-				if int(inByte)-48 != 1 {
-					os.Exit(1)
-				}
-				fmt.Printf("输入加密的密码:")
-				bufReader = bufio.NewReader(os.Stdin)
-				pass, err := bufReader.ReadString('\n')
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-				pass = strings.Trim(pass, "\r\n")
-				fileName, err := keystore.MakeKeyStore([]byte(pass), []byte(prv))
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-				fmt.Println("keystore已经生成到:", fileName)
-			}()
-		case 2:
-			// Use password to get private key in keystore.
-			func() {
-				var fileSlice []string
-				var dir string
-				if runtime.GOOS == "windows" {
-					dir = "C:\\MultiVACkeystore"
-					_, err := os.Stat(dir)
-					if err != nil {
-						fmt.Println("keystore存储文件夹不存在")
-						os.Exit(1)
-					}
-				} else {
-					dir = "./MultiVACkeystore"
-					_, err := os.Stat(dir)
-					if err != nil {
-						fmt.Println("keystore存储文件夹不存在")
-						os.Exit(1)
-					}
-				}
-				fileSlice, err = keystore.GetAllJSONFiles(dir, fileSlice)
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-				if len(fileSlice) == 0 {
-					fmt.Println("在程序指定目录下没有发现keystore文件")
-					os.Exit(1)
-				}
-				fmt.Printf("编号\t  文件名\n")
-				for in, val := range fileSlice {
-					fmt.Printf("%d\t %v\n", in, val)
-				}
-				fmt.Printf("选择需要解密的keystore的编号:")
-				bufReader := bufio.NewReader(os.Stdin)
-				inByte, err := bufReader.ReadString('\n')
-				inByte = strings.Trim(inByte, "\r\n")
-				if err != nil {
-					fmt.Println("读取键盘输入错误")
-					os.Exit(1)
-				}
-				index, err := strconv.Atoi(inByte)
-				if err != nil {
-					fmt.Println("读取键盘输入错误")
-					os.Exit(1)
-				}
-				if index > len(fileSlice)-1 || index < 0 {
-					fmt.Println("输入编号有误")
-					os.Exit(1)
-				}
-				jsonName := fileSlice[index]
-				fmt.Printf("输入解锁的密码:")
-				bufReader = bufio.NewReader(os.Stdin)
-				pass, err := bufReader.ReadString('\n')
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-				pass = strings.Trim(pass, "\r\n")
-				data, err := keystore.ReadJSON(jsonName)
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-				prv, err := keystore.GetPrivatekeyFromKeystore(pass, data)
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-				fmt.Println("解密后私钥：", prv)
-				pub, err := Account.PrivatekeyToPublickey(prv)
-				if err != nil {
-					fmt.Printf("出现未知错误,err:%v", err)
-				}
-				fmt.Println("公钥:", hex.EncodeToString(pub))
 
-			}()
-		default:
-			os.Exit(1)
+func generate(cmd *cobra.Command, args []string) {
+	if len(args) != 1 {
+		fmt.Println("args error")
+		return
+	}
+	account, _ := mnemonic.GenerateMnemonicByLength(24)
+	fileName, _ := keystore.MakeKeyStore([]byte(args[0]), []byte(account.PrivateKey))
+	fmt.Println("generate success!")
+	fmt.Println("public key:", account.PublicKey)
+	fmt.Println("private key:", account.PrivateKey)
+	fmt.Println("mnemonic:", account.Mnemonic)
+	fmt.Println("keystore file:", fileName)
+}
+
+func coverByMnemonic(cmd *cobra.Command, args []string) {
+	if len(args) != 24 {
+		fmt.Println("args error")
+		return
+	}
+	mne := ""
+	for i := range args {
+		if i != 0 {
+			mne += " "
 		}
-	case 3:
-		// Get public key from private key.
-		func() {
-			fmt.Printf("输入私钥:")
-			cmdReader := bufio.NewReader(os.Stdin)
-			privateKeyString, err := cmdReader.ReadString('\n')
-			privateKeyString = strings.Trim(privateKeyString, "\r\n")
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-			pub, err := Account.PrivatekeyToPublickey(privateKeyString)
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-			fmt.Println("对应的公钥:", hex.EncodeToString(pub))
-			fmt.Println("=======================")
-			fmt.Println("是否生成keystore？1.生成；其他退出")
-			fmt.Printf("请输入:")
-			bufReader := bufio.NewReader(os.Stdin)
-			inByte, err := bufReader.ReadByte()
-			if err != nil {
-				fmt.Println("读取键盘输入错误")
-				os.Exit(1)
-			}
-			if int(inByte)-48 != 1 {
-				os.Exit(1)
-			}
-			fmt.Printf("输入加密的密码:")
-			bufReader = bufio.NewReader(os.Stdin)
-			pass, err := bufReader.ReadString('\n')
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-			pass = strings.Trim(pass, "\r\n")
-			fileName, err := keystore.MakeKeyStore([]byte(pass), []byte(privateKeyString))
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-			fmt.Println("keystore已经生成到:", fileName)
-		}()
-	case 4:
-		// Sign the transaction by using private key.
-		func() {
-			fmt.Printf("输入私钥:")
-			cmdReader := bufio.NewReader(os.Stdin)
-			privateKeyString, err := cmdReader.ReadString('\n')
-			privateKeyString = strings.Trim(privateKeyString, "\r\n")
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-			_, err = signature.IsLegal(privateKeyString)
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-			fmt.Println("输入需要签名的数据:")
-			cmdReader = bufio.NewReader(os.Stdin)
-			transaction, err := cmdReader.ReadString('\n')
-			if err!=nil{
-				fmt.Println("读取签名数据失败,err:%v",err)
-				os.Exit(1)
-			}
-			transaction = strings.Trim(transaction, "\r\n")
-			sig, err := signature.Sign(privateKeyString, transaction)
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-			fmt.Println("签名的消息为:", hex.EncodeToString(sig))
-		}()
-	default:
+		mne += args[i]
+	}
+	fmt.Println(len(mne), mne)
+
+	pub, prv, err := mnemonic.MnemonicToAccount(mne)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("public key:", pub)
+	fmt.Println("private key:", prv)
+
+}
+
+func coverByKeystore(cmd *cobra.Command, args []string) {
+	if len(args) != 2 {
+		fmt.Println("args error")
+		return
+	}
+
+	data, err := keystore.ReadJSON(args[0])
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+	prv, err := keystore.GetPrivatekeyFromKeystore(args[1], data)
+
+	fmt.Println("private key:", prv)
+
+}
+
+//args[0]: priv key args[1]: txhex
+func sign(cmd *cobra.Command, args []string) {
+
+	if len(args) != 2 {
+		fmt.Println("args error")
+		return
+	}
+	signInfo := UnzipBox(args[1])
+	fmt.Println(signInfo)
+	signData, _ := hex.DecodeString(signInfo[1])
+	fmt.Println("a", signData)
+	sig, err := signature.Sign(args[0], signData)
+	fmt.Println("b", sig)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	pubKey, err := Account.PrivatekeyToPublickey(args[0])
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	signReturn := hex.EncodeToString(sig)
+	pubKeyReturn := hex.EncodeToString(pubKey)
+
+	ans := signInfo[0] + "." + signReturn + "." + pubKeyReturn
+
+	fmt.Println("sign success! message is:", ans)
+}
+
+func init() {
+	rootCmd.AddCommand(cmdGenerate)
+	rootCmd.AddCommand(cmdSign)
+	cmdCover.AddCommand(cmdCoverByKeystore)
+	cmdCover.AddCommand(cmdCoverByMnemonic)
+	rootCmd.AddCommand(cmdCover)
+}
+
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
+
 }
-func showMainMenu() {
-	fmt.Println("=======================")
-	fmt.Println("MultiVAC离线工具:")
-	fmt.Println("1.生成新账户")
-	fmt.Println("2.找回私钥")
-	fmt.Println("3.找回公钥")
-	fmt.Println("4.签名交易")
-	fmt.Println("其他字符退出")
-	fmt.Printf("请输入:")
+
+func main() {
+
+	Execute()
+
 }
-func showAccountMenu() {
-	fmt.Println("=======================")
-	fmt.Println("1.使用助记词生成私钥和公钥")
-	fmt.Println("2.直接生成私钥和公钥")
-	fmt.Println("其他字符退出")
-	fmt.Printf("请输入:")
+
+var rootCmd = &cobra.Command{
+	Use: "./tool []",
+	Long: `
+Welcome to the MultiVAC offline tool,which provides functions for generating accounts, restoring accounts, and signing transactions.
+`,
 }
-func showPrivateMenu() {
-	fmt.Println("=======================")
-	fmt.Println("1.根据助记词找回私钥")
-	fmt.Println("2.根据Keystore找回")
-	fmt.Println("其他字符退出")
-	fmt.Printf("请输入:")
+
+var cmdGenerate = &cobra.Command{
+	Use:   "generate [password]",
+	Short: "generate account",
+	Run:   generate,
+}
+
+var cmdCover = &cobra.Command{
+	Use:   "cover [sub]",
+	Short: "cover account",
+}
+
+var cmdSign = &cobra.Command{
+	Use:   "sign [private key] [sign message]",
+	Short: "sign a message",
+	Run:   sign,
+}
+
+var cmdCoverByMnemonic = &cobra.Command{
+	Use:   "bymnemonic [mneonic]...",
+	Short: "cover by mnemonic",
+	Run:   coverByMnemonic,
+}
+
+var cmdCoverByKeystore = &cobra.Command{
+	Use:   "bykeystore [keystore path] [password]",
+	Short: "cover by keystore",
+	Run:   coverByKeystore,
+}
+
+func UnzipBox(box string) ([]string) {
+	ans := strings.Split(box, ".")
+	if len(ans) != 3 {
+		return []string{}
+	}
+	return ans
+}
+
+func ZipBox(txHex string, signInfo []byte, pubKey []byte) string {
+	return txHex + "." + string(signInfo) + "." + string(pubKey)
 }
