@@ -12,7 +12,6 @@ type PrivateKey ed25519.PrivateKey
 // PublicKey defines the data structure of MultiVAC project public key.
 type PublicKey ed25519.PublicKey
 
-// GenerateAccount generate public key and private key for MultiVAC project.
 
 // PrivatekeyToPublickey get the public key for the input private key.
 func PrivatekeyToPublickey(prv string) (PublicKey, error) {
