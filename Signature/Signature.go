@@ -3,6 +3,7 @@ package signature
 import (
 	"encoding/hex"
 	"fmt"
+
 	"golang.org/x/crypto/ed25519"
 )
 
@@ -21,11 +22,7 @@ func Sign(privateKey string, message []byte) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("illegal private key,err:%v", err)
 	}
-
-	if err != nil {
-		return nil, fmt.Errorf("signed data is illegal,err:%v", err)
-	}
-	return ed25519.Sign(ed25519.PrivateKey(binaryPrv), message), nil
+	return ed25519.Sign(binaryPrv, message), nil
 }
 
 // IsLegal checks if the private key is legal.
