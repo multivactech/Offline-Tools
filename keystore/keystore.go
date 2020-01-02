@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"os"
 	"runtime"
-	"strings"
 	"time"
 
 	crypto2 "github.com/ethereum/go-ethereum/crypto"
@@ -177,7 +176,7 @@ func GetPrivatekeyFromKeystore(password string, keystore KeyStoreJSON) (string, 
 	if !bytes.Equal(mac, jsonMac) {
 		return "", fmt.Errorf("the json is tampered or the password cannot be decrypted")
 	}
-	privateKey, _, err := aesCtrCrypt([]byte(cipherText), certificate)
+	privateKey, _, err := aesCtrCrypt(cipherText, certificate)
 	if err != nil {
 		return "", fmt.Errorf("decryption failed，err:%v", err)
 	}
@@ -199,26 +198,4 @@ func isLegal(privateKey string) ([]byte, error) {
 	}
 	return val, nil
 
-}
-
-// GetAllJSONFiles read all json files in local folder.
-func GetAllJSONFiles(path string, s []string) ([]string, error) {
-	rd, err := ioutil.ReadDir(path)
-	if err != nil {
-		return s, err
-	}
-	var fullName string
-	for _, fi := range rd {
-		if !fi.IsDir() {
-			if runtime.GOOS == "windows" {
-				fullName = path + "\\" + fi.Name()
-			} else {
-				fullName = path + "/" + fi.Name()
-			}
-			if strings.Contains(fullName, "json") {
-				s = append(s, fullName)
-			}
-		}
-	}
-	return s, nil
 }

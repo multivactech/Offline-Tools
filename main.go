@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/multivactech/Offline-Tools/Account"
 	signature "github.com/multivactech/Offline-Tools/Signature"
 	"github.com/multivactech/Offline-Tools/keystore"
 	"github.com/multivactech/Offline-Tools/mnemonic"
-	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -61,10 +62,13 @@ func coverByKeystore(cmd *cobra.Command, args []string) {
 	data, err := keystore.ReadJSON(args[0])
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(0)
+		os.Exit(1)
 	}
 	prv, err := keystore.GetPrivatekeyFromKeystore(args[1], data)
-
+	if err!=nil{
+		fmt.Println("出现未知错误:",err)
+		return
+	}
 	fmt.Println("private key:", prv)
 
 }
@@ -157,14 +161,10 @@ var cmdCoverByKeystore = &cobra.Command{
 	Run:   coverByKeystore,
 }
 
-func UnzipBox(box string) ([]string) {
+func UnzipBox(box string) []string {
 	ans := strings.Split(box, ".")
 	if len(ans) != 3 {
 		return []string{}
 	}
 	return ans
-}
-
-func ZipBox(txHex string, signInfo []byte, pubKey []byte) string {
-	return txHex + "." + string(signInfo) + "." + string(pubKey)
 }
