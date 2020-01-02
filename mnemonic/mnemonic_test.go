@@ -16,7 +16,6 @@ func TestMnemonicToAccount(t *testing.T) {
 		want1   string
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
 			name:    "test#1",
 			args:    args{mnemonic: "guess merry multiply diesel injury obtain join peace autumn burger muscle detail day bid mansion nerve trash cloud mail casual genre bright visual mad"},
@@ -60,7 +59,6 @@ func TestGenerateMnemonicByLength1(t *testing.T) {
 		want    *Account
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
 			name: "test#1",
 			args: args{length: 24},
