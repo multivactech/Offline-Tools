@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const v = "version 1.0"
 
 func generate(cmd *cobra.Command, args []string) {
 	if len(args) != 1 {
@@ -65,8 +66,8 @@ func coverByKeystore(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 	prv, err := keystore.GetPrivatekeyFromKeystore(args[1], data)
-	if err!=nil{
-		fmt.Println("出现未知错误:",err)
+	if err != nil {
+		fmt.Println("出现未知错误:", err)
 		return
 	}
 	fmt.Println("private key:", prv)
@@ -109,8 +110,10 @@ func init() {
 	cmdCover.AddCommand(cmdCoverByKeystore)
 	cmdCover.AddCommand(cmdCoverByMnemonic)
 	rootCmd.AddCommand(cmdCover)
+	rootCmd.AddCommand(cmdVersion)
 }
 
+//Execute used to execute cobra command
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -149,6 +152,14 @@ var cmdSign = &cobra.Command{
 	Run:   sign,
 }
 
+var cmdVersion = &cobra.Command{
+	Use:   "version",
+	Short: "print tool version",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(v)
+	},
+}
+
 var cmdCoverByMnemonic = &cobra.Command{
 	Use:   "bymnemonic [mneonic]...",
 	Short: "cover by mnemonic",
@@ -161,6 +172,7 @@ var cmdCoverByKeystore = &cobra.Command{
 	Run:   coverByKeystore,
 }
 
+//UnzipBox used to unzip input string
 func UnzipBox(box string) []string {
 	ans := strings.Split(box, ".")
 	if len(ans) != 3 {
