@@ -49,7 +49,7 @@ func generateCertificate(password []byte) ([]byte, *KdfParam, error) {
 	var r int = 8
 	var p int = 1
 	var kenLen int = 32
-	var salt []byte = []byte("MultiVAC")
+	var salt = []byte("MultiVAC")
 	certificate, err := scrypt.Key(password, salt, n, r, p, kenLen)
 	if err != nil {
 		return nil, nil, fmt.Errorf("生成证书失败，err:%v", err)
@@ -70,7 +70,7 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to create keystore:err:%v", err)
 	}
-	keystore2Json, err := json.Marshal(keyStoreFile)
+	keystore2Json, err := json.MarshalIndent(keyStoreFile, " ", "  ")
 	if err != nil {
 		return "", fmt.Errorf("failed to convert to json:err:%v", err)
 	}
