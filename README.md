@@ -57,6 +57,10 @@ public key: de34cd10d92ec8908da538fec38409f920e5011132cddc048212ee95a7c177d6
 private key: 189a62ca1b59ce5d8bbf539216e0aa5fb9b956749d10e9cfe8623826484a1388de34cd10d92ec8908da538fec38409f920e5011132cddc048212ee95a7c177d6
 ```
 ### 生成账户
+注：keystore文件生成在以下路径：
+* mac:/Users/用户名/MultiVACkeystore/
+* linux:/home/用户名/MultiVACkeystore/
+* windows:C:\MultiVACkeystore\
 ```
 input:
 ./tools generate 123
