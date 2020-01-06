@@ -11,7 +11,7 @@ func decode64(str string) []byte {
 	return data
 }
 
-var k1 = KeyStoreJSON{
+var k1 = JSON{
 	Kdfparam: &KdfParam{
 		N:      32768,
 		R:      8,
@@ -29,7 +29,7 @@ var k1 = KeyStoreJSON{
 	Version:    "1.0",
 	Project:    "MultiVAC",
 }
-var k2 = KeyStoreJSON{
+var k2 = JSON{
 	Kdfparam: &KdfParam{
 		N:      32768,
 		R:      8,
@@ -56,7 +56,7 @@ func TestCreateKeyStore(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    KeyStoreJSON
+		want    JSON
 		wantErr bool
 	}{
 		{
@@ -95,7 +95,7 @@ func TestCreateKeyStore(t *testing.T) {
 func TestGetPrivatekeyFromKeystore(t *testing.T) {
 	type args struct {
 		password string
-		keystore KeyStoreJSON
+		keystore JSON
 	}
 	tests := []struct {
 		name    string
@@ -133,7 +133,7 @@ func TestGetPrivatekeyFromKeystore(t *testing.T) {
 			name: "error#2",
 			args: args{
 				password: "multivacTest",
-				keystore: KeyStoreJSON{
+				keystore: JSON{
 					Kdfparam: &KdfParam{
 						N:      32768,
 						R:      8,
@@ -159,7 +159,7 @@ func TestGetPrivatekeyFromKeystore(t *testing.T) {
 			name: "error#3",
 			args: args{
 				password: "multivacTest",
-				keystore: KeyStoreJSON{
+				keystore: JSON{
 					Kdfparam: &KdfParam{
 						N:      32768,
 						R:      8,
@@ -185,7 +185,7 @@ func TestGetPrivatekeyFromKeystore(t *testing.T) {
 			name: "error#4",
 			args: args{
 				password: "multivacTest",
-				keystore: KeyStoreJSON{
+				keystore: JSON{
 					Kdfparam: &KdfParam{
 						N:      328,
 						R:      8,
@@ -211,7 +211,7 @@ func TestGetPrivatekeyFromKeystore(t *testing.T) {
 			name: "error#5",
 			args: args{
 				password: "multivacTest",
-				keystore: KeyStoreJSON{
+				keystore: JSON{
 					Kdfparam: &KdfParam{
 						N:      32768,
 						R:      8,

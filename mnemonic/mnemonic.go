@@ -57,8 +57,8 @@ func GenerateMnemonicByLength(length int) (*Account, error) {
 	}, nil
 }
 
-// MnemonicToAccount get private key and public key by using mnemonic.Returns publickey,privatekey,error.
-func MnemonicToAccount(mnemonic string) (string, string, error) {
+// ToAccount get private key and public key by using mnemonic.Returns publickey,privatekey,error.
+func ToAccount(mnemonic string) (string, string, error) {
 	seed := bip39.NewSeed(mnemonic, "")
 	seedForMultiVAC := seed[:32]
 	reader := bytes.NewReader(seedForMultiVAC)

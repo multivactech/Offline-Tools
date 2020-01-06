@@ -29,7 +29,7 @@ func TestSign(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "test#1",
+			name: "test#2",
 			args: args{
 				privateKey: "118a49e8cddf0d313750b15f1b5f6bad205c621138b2a678ec9a8262d3d1691d44c430f07e187e5d9d9fd22a57f0cb7065f02b76a76cc3085802b85954f4c14f",
 				message:    []byte("4cc79387ef729c935c20f9715d2135b756af61d8a1e8330badc21d7667"),

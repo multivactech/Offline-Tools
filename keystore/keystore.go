@@ -31,8 +31,8 @@ type CipherParams struct {
 	Iv []byte
 }
 
-// KeyStoreJSON is used for json encoding storage and local.
-type KeyStoreJSON struct {
+// JSON is used for json encoding storage and local.
+type JSON struct {
 	Kdfparam     *KdfParam    `json:"kdfparam"`
 	CipherParams CipherParams `json:"cipher_params"`
 	Cipher       string       `json:"cipher"`
@@ -45,10 +45,10 @@ type KeyStoreJSON struct {
 
 // generateCertificate generates a certificate for AES algorithm encryption based on the entered password.
 func generateCertificate(password []byte) ([]byte, *KdfParam, error) {
-	var n int = 32768
-	var r int = 8
-	var p int = 1
-	var kenLen int = 32
+	var n = 32768
+	var r = 8
+	var p = 1
+	var kenLen = 32
 	var salt = []byte("MultiVAC")
 	certificate, err := scrypt.Key(password, salt, n, r, p, kenLen)
 	if err != nil {
@@ -75,9 +75,12 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 		return "", fmt.Errorf("failed to convert to json:err:%v", err)
 	}
 	var fileName string
+	filePath, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("failed to get file path,err:%v", err)
+	}
 	CurrentTime := time.Now().Format("2006-1-2-15-04-05")
 	if runtime.GOOS == "windows" {
-		filePath := "C:\\MultiVACkeystore\\"
 		_, err := os.Stat(filePath)
 		if err != nil {
 			err := os.Mkdir(filePath, os.ModePerm)
@@ -87,7 +90,6 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 		}
 		fileName = filePath + "MultiVAC" + CurrentTime + ".json"
 	} else {
-		filePath := "./MultiVACkeystore"
 		_, err := os.Stat(filePath)
 		if err != nil {
 			err := os.Mkdir(filePath, os.ModePerm)
@@ -110,17 +112,17 @@ func MakeKeyStore(password, privateKey []byte) (string, error) {
 }
 
 //CreateKeyStore create a keystore structure
-func CreateKeyStore(password, privateKey []byte) (KeyStoreJSON, error) {
+func CreateKeyStore(password, privateKey []byte) (JSON, error) {
 	certificate, kdfparams, err := generateCertificate(password)
 	if err != nil {
-		return KeyStoreJSON{}, err
+		return JSON{}, err
 	}
 	cipherText, iv, err := aesCtrCrypt(privateKey, certificate)
 	if err != nil {
-		return KeyStoreJSON{}, err
+		return JSON{}, err
 	}
 	mac := crypto2.Keccak256(certificate, cipherText)
-	keyStore := KeyStoreJSON{
+	keyStore := JSON{
 		Kdfparam: kdfparams,
 		CipherParams: CipherParams{
 			Iv: iv,
@@ -150,21 +152,21 @@ func aesCtrCrypt(text []byte, key []byte) ([]byte, []byte, error) {
 }
 
 // ReadJSON is used to read a json file with the specified file name and return the keystore data structure.
-func ReadJSON(fileName string) (KeyStoreJSON, error) {
+func ReadJSON(fileName string) (JSON, error) {
 	file, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		return KeyStoreJSON{}, fmt.Errorf("fail to read file，err:%v", err)
+		return JSON{}, fmt.Errorf("fail to read file，err:%v", err)
 	}
-	var total KeyStoreJSON
+	var total JSON
 	err = json.Unmarshal(file, &total)
 	if err != nil {
-		return KeyStoreJSON{}, fmt.Errorf("fail to read data from json，err:%v", err)
+		return JSON{}, fmt.Errorf("fail to read data from json，err:%v", err)
 	}
 	return total, nil
 }
 
 // GetPrivatekeyFromKeystore decrypts the encrypted private key based on the user's password and necessary parameters.
-func GetPrivatekeyFromKeystore(password string, keystore KeyStoreJSON) (string, error) {
+func GetPrivatekeyFromKeystore(password string, keystore JSON) (string, error) {
 	params := keystore.Kdfparam
 	cipherText := keystore.CipherText
 	mac := keystore.Mac
@@ -190,7 +192,7 @@ func GetPrivatekeyFromKeystore(password string, keystore KeyStoreJSON) (string, 
 // isLegal checks if the private key is legal.
 func isLegal(privateKey string) ([]byte, error) {
 	if len(privateKey) != 128 {
-		return nil, fmt.Errorf("error length of private key")
+		return nil, fmt.Errorf("invalid length of private key")
 	}
 	val, err := hex.DecodeString(privateKey)
 	if err != nil {

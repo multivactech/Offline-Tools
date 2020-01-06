@@ -21,16 +21,16 @@ func generate(cmd *cobra.Command, args []string) {
 		fmt.Println("args error")
 		return
 	}
-	account, _ := mnemonic.GenerateMnemonicByLength(24)
-	fileName, _ := keystore.MakeKeyStore([]byte(args[0]), []byte(account.PrivateKey))
+	mtvAccount, _ := mnemonic.GenerateMnemonicByLength(24)
+	fileName, _ := keystore.MakeKeyStore([]byte(args[0]), []byte(mtvAccount.PrivateKey))
 	fmt.Println("generate success!")
-	fmt.Println("public key:", account.PublicKey)
-	fmt.Println("private key:", account.PrivateKey)
-	fmt.Println("mnemonic:", account.Mnemonic)
+	fmt.Println("public key:", mtvAccount.PublicKey)
+	fmt.Println("private key:", mtvAccount.PrivateKey)
+	fmt.Println("mnemonic:", mtvAccount.Mnemonic)
 	fmt.Println("keystore file:", fileName)
 }
 
-func coverByMnemonic(cmd *cobra.Command, args []string) {
+func recoverByMnemonic(cmd *cobra.Command, args []string) {
 	if len(args) != 24 {
 		fmt.Println("args error")
 		return
@@ -44,7 +44,7 @@ func coverByMnemonic(cmd *cobra.Command, args []string) {
 	}
 	fmt.Println(len(mne), mne)
 
-	pub, prv, err := mnemonic.MnemonicToAccount(mne)
+	pub, prv, err := mnemonic.ToAccount(mne)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -54,7 +54,7 @@ func coverByMnemonic(cmd *cobra.Command, args []string) {
 
 }
 
-func coverByKeystore(cmd *cobra.Command, args []string) {
+func recoverByKeystore(cmd *cobra.Command, args []string) {
 	if len(args) != 2 {
 		fmt.Println("args error")
 		return
@@ -81,7 +81,7 @@ func sign(cmd *cobra.Command, args []string) {
 		fmt.Println("args error")
 		return
 	}
-	signInfo := UnzipBox(args[1])
+	signInfo := unzipBox(args[1])
 	fmt.Println(signInfo)
 	signData, _ := hex.DecodeString(signInfo[1])
 	fmt.Println("a", signData)
@@ -91,7 +91,7 @@ func sign(cmd *cobra.Command, args []string) {
 		fmt.Println(err)
 		return
 	}
-	pubKey, err := Account.PrivatekeyToPublickey(args[0])
+	pubKey, err := account.PrivatekeyToPublickey(args[0])
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -113,8 +113,8 @@ func init() {
 	rootCmd.AddCommand(cmdVersion)
 }
 
-//Execute used to execute cobra command
-func Execute() {
+//execute used to execute cobra command
+func execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -124,7 +124,7 @@ func Execute() {
 
 func main() {
 
-	Execute()
+	execute()
 
 }
 
@@ -142,7 +142,7 @@ var cmdGenerate = &cobra.Command{
 }
 
 var cmdCover = &cobra.Command{
-	Use:   "cover [sub]",
+	Use:   "recover [sub]",
 	Short: "cover account",
 }
 
@@ -162,18 +162,18 @@ var cmdVersion = &cobra.Command{
 
 var cmdCoverByMnemonic = &cobra.Command{
 	Use:   "bymnemonic [mneonic]...",
-	Short: "cover by mnemonic",
-	Run:   coverByMnemonic,
+	Short: "recover by mnemonic",
+	Run:   recoverByMnemonic,
 }
 
 var cmdCoverByKeystore = &cobra.Command{
 	Use:   "bykeystore [keystore path] [password]",
-	Short: "cover by keystore",
-	Run:   coverByKeystore,
+	Short: "recover by keystore",
+	Run:   recoverByKeystore,
 }
 
-//UnzipBox used to unzip input string
-func UnzipBox(box string) []string {
+//unzipBox used to unzip input string
+func unzipBox(box string) []string {
 	ans := strings.Split(box, ".")
 	if len(ans) != 3 {
 		return []string{}
