@@ -1,4 +1,4 @@
-package Account
+package account
 
 import (
 	"encoding/hex"
@@ -9,9 +9,9 @@ import (
 
 // PrivateKey defines the data structure of MultiVAC project private key.
 type PrivateKey ed25519.PrivateKey
+
 // PublicKey defines the data structure of MultiVAC project public key.
 type PublicKey ed25519.PublicKey
-
 
 // PrivatekeyToPublickey get the public key for the input private key.
 func PrivatekeyToPublickey(prv string) (PublicKey, error) {
