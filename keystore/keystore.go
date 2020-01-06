@@ -12,7 +12,7 @@ import (
 	"runtime"
 	"time"
 
-	crypto2 "github.com/ethereum/go-ethereum/crypto"
+	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"golang.org/x/crypto/scrypt"
 )
 
@@ -121,7 +121,7 @@ func CreateKeyStore(password, privateKey []byte) (JSON, error) {
 	if err != nil {
 		return JSON{}, err
 	}
-	mac := crypto2.Keccak256(certificate, cipherText)
+	mac := ethcrypto.Keccak256(certificate, cipherText)
 	keyStore := JSON{
 		Kdfparam: kdfparams,
 		CipherParams: CipherParams{
@@ -174,7 +174,7 @@ func GetPrivatekeyFromKeystore(password string, keystore JSON) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to generate certificate，err:%v", err)
 	}
-	jsonMac := crypto2.Keccak256(certificate, cipherText)
+	jsonMac := ethcrypto.Keccak256(certificate, cipherText)
 	if !bytes.Equal(mac, jsonMac) {
 		return "", fmt.Errorf("the json is tampered or the password cannot be decrypted")
 	}
