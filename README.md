@@ -37,7 +37,7 @@ go build -o tools
 ### 根据keystore恢复私钥
 ```
 input：
-./tools cover bykeystore MultiVACkeystore/MultiVAC2020-1-3-11-34-29.json 123
+./tools recover bykeystore MultiVACkeystore/MultiVAC2020-1-3-11-34-29.json 123
 
 output：
 private key: 189a62ca1b59ce5d8bbf539216e0aa5fb9b956749d10e9cfe8623826484a1388de34cd10d92ec8908da538fec38409f920e5011132cddc048212ee95a7c177d6
@@ -45,7 +45,7 @@ private key: 189a62ca1b59ce5d8bbf539216e0aa5fb9b956749d10e9cfe8623826484a1388de3
 ### 根据助记词恢复私钥
 ```
 input：
-./tools cover bymnemonic pig roof metal receive fiber script dash aspect deny submit orchard prosper narrow reflect hood witness cherry friend smooth come smooth identify wrestle include
+./tools recover bymnemonic pig roof metal receive fiber script dash aspect deny submit orchard prosper narrow reflect hood witness cherry friend smooth come smooth identify wrestle include
 
 output：
 public key: de34cd10d92ec8908da538fec38409f920e5011132cddc048212ee95a7c177d6
