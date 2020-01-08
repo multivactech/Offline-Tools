@@ -6,10 +6,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/multivactech/Offline-Tools/Account"
-	signature "github.com/multivactech/Offline-Tools/Signature"
+	"github.com/multivactech/Offline-Tools/account"
 	"github.com/multivactech/Offline-Tools/keystore"
 	"github.com/multivactech/Offline-Tools/mnemonic"
+	"github.com/multivactech/Offline-Tools/signature"
 
 	"github.com/spf13/cobra"
 )
