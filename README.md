@@ -13,7 +13,7 @@
 ```
 git clone https://github.com/multivactech/Offline-Tools.git
 
-go build -o tools
+go build -o tool
 
 ```
 
