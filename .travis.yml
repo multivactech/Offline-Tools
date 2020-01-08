@@ -1,0 +1,3 @@
+os: linux
+sudo: false
+language: go
