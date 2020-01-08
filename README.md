@@ -20,10 +20,10 @@ go build -o tools
 ## 使用：
 
 ```
-./tools -h
+./tool -h
 可以看到可执行子命令的操作
 
-./tools
+./tool
           recover
                 bykeystore  [keystore路径] [keystore密码]（注：此密码为之前此账户设置的密码） //根据keystore恢复私钥
                 bymnemonic  [助记词]                                   //根据助记词恢复私钥
@@ -37,7 +37,7 @@ go build -o tools
 ### 根据keystore恢复私钥
 ```
 input：
-./tools recover bykeystore MultiVACkeystore/MultiVAC2020-1-3-11-34-29.json 123
+./tool recover bykeystore MultiVACkeystore/MultiVAC2020-1-3-11-34-29.json 123
 
 output：
 private key: 189a62ca1b59ce5d8bbf539216e0aa5fb9b956749d10e9cfe8623826484a1388de34cd10d92ec8908da538fec38409f920e5011132cddc048212ee95a7c177d6
@@ -45,7 +45,7 @@ private key: 189a62ca1b59ce5d8bbf539216e0aa5fb9b956749d10e9cfe8623826484a1388de3
 ### 根据助记词恢复私钥
 ```
 input：
-./tools recover bymnemonic pig roof metal receive fiber script dash aspect deny submit orchard prosper narrow reflect hood witness cherry friend smooth come smooth identify wrestle include
+./tool recover bymnemonic pig roof metal receive fiber script dash aspect deny submit orchard prosper narrow reflect hood witness cherry friend smooth come smooth identify wrestle include
 
 output：
 public key: de34cd10d92ec8908da538fec38409f920e5011132cddc048212ee95a7c177d6
@@ -55,7 +55,7 @@ private key: 189a62ca1b59ce5d8bbf539216e0aa5fb9b956749d10e9cfe8623826484a1388de3
 注：keystore文件生成在当前二进制运行目录下，生成keystore时会打印出生成的路径和文件名：
 ```
 input:
-./tools generate 123
+./tool generate 123
 
 output:
 generate success!
@@ -78,4 +78,4 @@ sign success! message is: f8f682010180f881f87ff87d80a0c43a42b737e9b9dccdfd332393
 
 1. 助记词和私钥具有等同地位，助记词泄漏意味着私钥泄漏，所以务必保存好助记词，不要让他人知晓。
 2. keystore的密码请务必记清楚，里面的内容请不要修改，否则无法保证从keystore中找回私钥。
-3. 本项目支持windows平台，在windows平台运行时不加`"./"`（ `./tools` ======> `tools`）
+3. 本项目支持windows平台，在windows平台运行时不加`"./"`（ `./tool` ======> `tool`）
