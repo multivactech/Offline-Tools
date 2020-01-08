@@ -1,4 +1,6 @@
 # MultiVAC离线使用工具
+[![Go Report Card](https://goreportcard.com/badge/github.com/multivactech/Offline-Tools)](https://goreportcard.com/report/github.com/multivactech/Offline-Tools)
+
 
 ## 说明：
 
