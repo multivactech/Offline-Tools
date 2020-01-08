@@ -1,6 +1,5 @@
 # MultiVAC离线使用工具
-[![Go Report Card](https://goreportcard.com/badge/github.com/multivactech/Offline-Tools)](https://goreportcard.com/report/github.com/multivactech/Offline-Tools)
-
+[![Go Report Card](https://goreportcard.com/badge/github.com/multivactech/Offline-Tools)](https://goreportcard.com/report/github.com/multivactech/Offline-Tools)  &ensp;     [![Build Status](https://travis-ci.org/multivactech/Offline-Tools.svg?branch=master)](https://travis-ci.org/multivactech/Offline-Tools) &ensp; [![Language](https://img.shields.io/badge/Language-Go-blue.svg)](https://golang.org/)  &ensp; ![GitHub](https://img.shields.io/github/license/multivactech/Offline-tools)
 
 ## 说明：
 
