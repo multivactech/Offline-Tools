@@ -1,7 +1,6 @@
 # MultiVAC离线使用工具
 [![Go Report Card](https://goreportcard.com/badge/github.com/multivactech/Offline-Tools)](https://goreportcard.com/report/github.com/multivactech/Offline-Tools)  &ensp;     [![Build Status](https://travis-ci.org/multivactech/Offline-Tools.svg?branch=master)](https://travis-ci.org/multivactech/Offline-Tools) &ensp; [![Language](https://img.shields.io/badge/Language-Go-blue.svg)](https://golang.org/)  &ensp; ![GitHub](https://img.shields.io/github/license/multivactech/Offline-tools)
 
-
 [English Version](https://github.com/multivactech/Offline-Tools/blob/master/README-en.md)
 ## 说明：
 
@@ -25,17 +24,29 @@ go build -o tool
 ```
 ./tool -h
 可以看到可执行子命令的操作
-
 ./tool
-          recover
-                bykeystore  [keystore路径] [keystore密码]（注：此密码为之前此账户设置的密码） //根据keystore恢复私钥
-                bymnemonic  [助记词]                                   //根据助记词恢复私钥
-          generate  [keystore密码] （注：此密码为新设置的密码，请妥善保存）   //根据密码返回：公钥，私钥，助记词，keysotre本地文件       
-          sign    [私钥名称] [签名信息]                                  //根据私钥对某个签名信息进行签名，返回一个签名完成的信息
-          version                                                     //返回当前离线工具版本信息
+├── generate [keystore密码] （注：此密码为新设置的密码，请妥善保存）                 //根据密码返回：公钥，私钥，助记词，keysotre本地文件
+├── recover
+│   ├── bykeystore [keystore路径] [keystore密码]（注：此密码为之前此账户设置的密码） //根据keystore恢复私钥
+│   └── bymnemonic [助记词]                                                    //根据助记词恢复私钥
+├── version                                                                   //返回当前离线工具版本信息
+└── sign [私钥名称] [签名信息]                                                   //根据私钥对某个签名信息进行签名，返回一个签名完成的信息
 ```
 
 ## 用例：
+### 生成账户
+注：keystore文件生成在当前二进制运行目录下，生成keystore时会打印出生成的路径和文件名：
+```
+input:
+./tool generate 123
+
+output:
+generate success!
+public key: 44f3999d890d156ba8d239d6b0447a4c249423e0d46b148a8aa514eaf5e1d0c5
+private key: ccf0f82e13429c71f8ebbf2a0929f4fe5df4061eb2e005550d3daed23c3b9fa744f3999d890d156ba8d239d6b0447a4c249423e0d46b148a8aa514eaf5e1d0c5
+mnemonic: spoon glimpse act track hurt between nasty april ranch economy marble absorb van organ safe south mind urge base treat grant protect ski net
+keystore file: /MultiVACkeystore/MultiVAC2020-1-3-11-27-44.json
+```
 
 ### 根据keystore恢复私钥
 ```
@@ -53,19 +64,6 @@ input：
 output：
 public key: de34cd10d92ec8908da538fec38409f920e5011132cddc048212ee95a7c177d6
 private key: 189a62ca1b59ce5d8bbf539216e0aa5fb9b956749d10e9cfe8623826484a1388de34cd10d92ec8908da538fec38409f920e5011132cddc048212ee95a7c177d6
-```
-### 生成账户
-注：keystore文件生成在当前二进制运行目录下，生成keystore时会打印出生成的路径和文件名：
-```
-input:
-./tool generate 123
-
-output:
-generate success!
-public key: 44f3999d890d156ba8d239d6b0447a4c249423e0d46b148a8aa514eaf5e1d0c5
-private key: ccf0f82e13429c71f8ebbf2a0929f4fe5df4061eb2e005550d3daed23c3b9fa744f3999d890d156ba8d239d6b0447a4c249423e0d46b148a8aa514eaf5e1d0c5
-mnemonic: spoon glimpse act track hurt between nasty april ranch economy marble absorb van organ safe south mind urge base treat grant protect ski net
-keystore file: /MultiVACkeystore/MultiVAC2020-1-3-11-27-44.json
 ```
 
 ### 签名
