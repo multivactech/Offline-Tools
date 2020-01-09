@@ -23,19 +23,31 @@ go build -o tool
 
 ```
 ./tool -h
-Check executable subcommand
-
+Check executable subcommand        
 ./tool
-          recover
-                bykeystore  [keystore Path] [keystore Password]（Notes: this password was set for the account previously） //Use keystore to retrieve private key
-                bymnemonic  [mnemonic phrases]                                   //Use mnemonic phrases to retrieve private key
-          generate  [keystore password] （Notes: this password is the newly set one. Please keep it safe）   //By password return: public key, private key, mnemonic seed, keystore local file       
-          sign     [private key] [signature info]                                 //Using private key to make signature and return a signature complete info
-          version                                                     //return the current offline tool version info 
+├── generate [keystore password] （Notes: this password is the newly set one. Please keep it safe）                 //By password return: public key, private key, mnemonic seed, keystore local file
+├── recover
+│   ├── bykeystore [keystore Path] [keystore Password]（Notes: this password was set for the account previously）   //Use keystore to retrieve private key
+│   └── bymnemonic [mnemonic phrases]                                                                              //Use mnemonic phrases to retrieve private key
+├── sign [private key] [signature info]                                                                            //Using private key to make signature and return a signature complete info
+└── version                                                                                                        //return the current offline tool version info
 ```
 
 ## Example:
 
+### Generate a new account
+Note: keystore file is created in the current binary directory. Create keystore will print creation path and file name.
+```
+input:
+./tool generate 123
+
+output:
+generate success!
+public key: 44f3999d890d156ba8d239d6b0447a4c249423e0d46b148a8aa514eaf5e1d0c5
+private key: ccf0f82e13429c71f8ebbf2a0929f4fe5df4061eb2e005550d3daed23c3b9fa744f3999d890d156ba8d239d6b0447a4c249423e0d46b148a8aa514eaf5e1d0c5
+mnemonic: spoon glimpse act track hurt between nasty april ranch economy marble absorb van organ safe south mind urge base treat grant protect ski net
+keystore file: /MultiVACkeystore/MultiVAC2020-1-3-11-27-44.json
+```
 ### Recover private key with keystore
 ```
 input：
@@ -52,19 +64,6 @@ input：
 output：
 public key: de34cd10d92ec8908da538fec38409f920e5011132cddc048212ee95a7c177d6
 private key: 189a62ca1b59ce5d8bbf539216e0aa5fb9b956749d10e9cfe8623826484a1388de34cd10d92ec8908da538fec38409f920e5011132cddc048212ee95a7c177d6
-```
-### Generate a new account
-Note: keystore file is created in the current binary directory. Create keystore will print creation path and file name.
-```
-input:
-./tool generate 123
-
-output:
-generate success!
-public key: 44f3999d890d156ba8d239d6b0447a4c249423e0d46b148a8aa514eaf5e1d0c5
-private key: ccf0f82e13429c71f8ebbf2a0929f4fe5df4061eb2e005550d3daed23c3b9fa744f3999d890d156ba8d239d6b0447a4c249423e0d46b148a8aa514eaf5e1d0c5
-mnemonic: spoon glimpse act track hurt between nasty april ranch economy marble absorb van organ safe south mind urge base treat grant protect ski net
-keystore file: /MultiVACkeystore/MultiVAC2020-1-3-11-27-44.json
 ```
 
 ### Signature
