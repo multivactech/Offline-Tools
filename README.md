@@ -1,6 +1,8 @@
 # MultiVAC离线使用工具
 [![Go Report Card](https://goreportcard.com/badge/github.com/multivactech/Offline-Tools)](https://goreportcard.com/report/github.com/multivactech/Offline-Tools)  &ensp;     [![Build Status](https://travis-ci.org/multivactech/Offline-Tools.svg?branch=master)](https://travis-ci.org/multivactech/Offline-Tools) &ensp; [![Language](https://img.shields.io/badge/Language-Go-blue.svg)](https://golang.org/)  &ensp; ![GitHub](https://img.shields.io/github/license/multivactech/Offline-tools)
 
+
+[English Version](https://github.com/multivactech/Offline-Tools/blob/master/README-en.md)
 ## 说明：
 
 本项目适用于MultiVAC的离线工具，基于Go1.12版本，在离线环境下具有以下功能：
