@@ -1,16 +1,16 @@
-# MultiVAC离线使用工具
+# MultiVAC Offline-Tools
 [![Go Report Card](https://goreportcard.com/badge/github.com/multivactech/Offline-Tools)](https://goreportcard.com/report/github.com/multivactech/Offline-Tools)  &ensp;     [![Build Status](https://travis-ci.org/multivactech/Offline-Tools.svg?branch=master)](https://travis-ci.org/multivactech/Offline-Tools) &ensp; [![Language](https://img.shields.io/badge/Language-Go-blue.svg)](https://golang.org/)  &ensp; ![GitHub](https://img.shields.io/github/license/multivactech/Offline-tools)
 
 [English Version](https://github.com/multivactech/Offline-Tools/blob/master/README-en.md)
-## 说明：
+## Description：
 
-本项目适用于MultiVAC的离线工具，基于Go1.12版本，在离线环境下具有以下功能：
+This project is suitable for the offline tool of MultiVAC, based on Go1.12 version, has the following functions in the offline environment:
 
-1. 生成MultiVAC账户，包括:私钥、公钥，助记词和keystore。
-2. 使用私钥对输入的交易进行签名(Signature)。
-3. 根据助记词、keystore找回私钥。
+1. Generate a MultiVAC account, including: private key, public key, mnemonic phrase and keystore.
+2. Use the private key to sign the entered transaction (Signature).
+3. Retrieve the private key according to the mnemonic phrase and keystore.
 
-## 安装&编译：
+## Install & Compile：
 
 ```
 git clone https://github.com/multivactech/Offline-Tools.git
@@ -19,7 +19,7 @@ go build -o tool
 
 ```
 
-## 使用：
+## Usage：
 
 ```
 ./tool -h
@@ -33,7 +33,7 @@ go build -o tool
 └── sign [私钥名称] [签名信息]                                                   //根据私钥对某个签名信息进行签名，返回一个签名完成的信息
 ```
 
-## 用例：
+## Example：
 ### 生成账户
 注：keystore文件生成在当前二进制运行目录下，生成keystore时会打印出生成的路径和文件名：
 ```
